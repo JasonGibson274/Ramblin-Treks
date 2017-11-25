@@ -8,8 +8,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <parent>
-        <groupId>treks</groupId>
-        <artifactId>treks</artifactId>
+        <groupId>backend</groupId>
+        <artifactId>backend</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <build>

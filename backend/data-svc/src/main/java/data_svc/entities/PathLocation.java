@@ -1,9 +1,11 @@
-package entity;
+package data_svc.entities;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+@Entity
 public class PathLocation {
     @Id
     private UUID id;

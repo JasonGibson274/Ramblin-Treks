@@ -1,6 +1,5 @@
-package repository;
+package data_svc.entities;
 
-import entity.PathLocation;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
