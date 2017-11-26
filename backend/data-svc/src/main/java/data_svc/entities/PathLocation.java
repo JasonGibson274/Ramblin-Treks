@@ -1,13 +1,17 @@
 package data_svc.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
 public class PathLocation {
     @Id
+    @GeneratedValue
     private UUID id;
 
     @NotNull
@@ -16,11 +20,20 @@ public class PathLocation {
     @NotNull
     private Double longitude;
 
+    @NotNull
+    private Date timeUploaded;
+
+    @PrePersist
+    public void init() {
+        this.timeUploaded = new Date();
+    }
+
     public PathLocation(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
+    public PathLocation() {}
 
     public Double getLatitude() {
         return latitude;
@@ -36,5 +49,21 @@ public class PathLocation {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Date getTimeUploaded() {
+        return timeUploaded;
+    }
+
+    public void setTimeUploaded(Date timeUploaded) {
+        this.timeUploaded = timeUploaded;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

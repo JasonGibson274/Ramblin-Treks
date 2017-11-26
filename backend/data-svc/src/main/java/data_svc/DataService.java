@@ -5,6 +5,8 @@ import data_svc.entities.PathLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DataService {
 
@@ -18,5 +20,9 @@ public class DataService {
     public void saveLocation(double latitude, double longitude) {
         final PathLocation path = new PathLocation(latitude, longitude);
         pathLocationRepository.save(path);
+    }
+
+    public List<PathLocation> findAllPathLocations() {
+        return pathLocationRepository.findAll();
     }
 }

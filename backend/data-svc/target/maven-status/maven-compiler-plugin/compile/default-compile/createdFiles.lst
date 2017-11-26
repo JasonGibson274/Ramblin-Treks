@@ -1,0 +1,5 @@
+data_svc/entities/PathLocation.class
+data_svc/DataService.class
+data_svc/DataController.class
+data_svc/DataApplication.class
+data_svc/entities/PathLocationRepository.class
