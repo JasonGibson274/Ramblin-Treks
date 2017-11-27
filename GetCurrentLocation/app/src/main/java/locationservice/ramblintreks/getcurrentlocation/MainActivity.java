@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         RequestQueue q = ((App) this.getApplication()).getQueue();
 
-        final String url = "http://128.61.114.185:8080" + "/?lat=" + lat + "&long=" + lon;
+        final String url = "http://172.16.107.74:8080" + "/?lat=" + lat + "&long=" + lon;
 
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
