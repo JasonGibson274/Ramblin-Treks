@@ -4,6 +4,8 @@ import data_svc.entities.PathLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,5 +27,10 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, value = "/path")
     public List<PathLocation> getLocations() {
         return dataService.findAllPathLocations();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/csv")
+    public void downloadCSV(HttpServletResponse response) throws IOException {
+        dataService.createCSV(response);
     }
 }
