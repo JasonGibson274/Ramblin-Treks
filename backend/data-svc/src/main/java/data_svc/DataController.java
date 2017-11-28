@@ -33,4 +33,9 @@ public class DataController {
     public void downloadCSV(HttpServletResponse response) throws IOException {
         dataService.createCSV(response);
     }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public void uploadCSV(@RequestBody String csv) {
+        dataService.saveCsv(csv);
+    }
 }

@@ -4,13 +4,13 @@ import data_svc.entities.PathLocation;
 import data_svc.entities.PathLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
 @Service
 public class DataService {
@@ -58,5 +58,13 @@ public class DataService {
         }
 
         csvWriter.close();
+    }
+
+    public void saveCsv(String csv) {
+        csv = csv.replaceFirst(".*\n", "");
+        for(String line : csv.split("\n")) {
+            String[] temp = line.split(",");
+            saveLocation(new Double(temp[1]), new Double(temp[2]));
+        }
     }
 }
