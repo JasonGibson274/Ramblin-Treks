@@ -1,5 +1,6 @@
 package data_svc;
 
+import data_svc.entities.BusPosition;
 import data_svc.entities.PathLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,10 @@ public class DataController {
     @RequestMapping(method = RequestMethod.POST)
     public void uploadCSV(@RequestBody String csv) {
         dataService.saveCsv(csv);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "buses")
+    public List<BusPosition> getBusesInformation() {
+        return dataService.getBusInformation();
     }
 }
