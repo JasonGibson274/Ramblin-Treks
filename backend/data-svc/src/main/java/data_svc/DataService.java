@@ -112,4 +112,8 @@ public class DataService {
             return null;
         }
     }
+
+    public long getCount() {
+        return pathLocationRepository.count();
+    }
 }
