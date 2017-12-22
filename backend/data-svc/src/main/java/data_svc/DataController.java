@@ -44,4 +44,9 @@ public class DataController {
     public List<BusPosition> getBusesInformation() {
         return dataService.getBusInformation();
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "count")
+    public long getCount() {
+        return dataService.getCount();
+    }
 }
