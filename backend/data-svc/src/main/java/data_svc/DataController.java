@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/data")
@@ -48,5 +49,10 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, value = "count")
     public long getCount() {
         return dataService.getCount();
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public void deleteLocation(@RequestParam UUID id) {
+        dataService.deleteLocation(id);
     }
 }

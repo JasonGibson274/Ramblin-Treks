@@ -18,6 +18,7 @@ import org.supercsv.prefs.CsvPreference;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DataService {
@@ -115,5 +116,9 @@ public class DataService {
 
     public long getCount() {
         return pathLocationRepository.count();
+    }
+
+    public void deleteLocation(UUID id) {
+        pathLocationRepository.delete(id);
     }
 }
