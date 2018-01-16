@@ -55,4 +55,9 @@ public class DataController {
     public void deleteLocation(@RequestParam UUID id) {
         dataService.deleteLocation(id);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/simplified/csv")
+    public void downloadCSVSimple(HttpServletResponse response) throws IOException {
+        dataService.createSimplifiedCsv(response);
+    }
 }

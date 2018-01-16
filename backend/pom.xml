@@ -17,5 +17,6 @@
 
     <modules>
         <module>data-svc</module>
+        <module>pather</module>
     </modules>
 </project>
