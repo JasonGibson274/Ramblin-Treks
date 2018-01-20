@@ -1,6 +1,6 @@
-version: '2'
+version: '3'
 services:
-  webapp:
+  data-svc:
     build: ./data-svc
     ports:
       - "9001:9001"
@@ -9,9 +9,11 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+    image: data-svc
     depends_on:
-      - postgres
-  postgres:
+      - data-svc-db
+    env_file: data-svc/.env
+  data-svc-db:
     image: postgres
     ports:
       - "5432:5432"
@@ -20,13 +22,17 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - data-svc-db:/var/lib/postgresql/data
   pather:
-      build: ./pather
-      ports:
-        - "9003:9003"
-      logging:
-        driver: "json-file"
-        options:
-          max-size: "200k"
-          max-file: "10"
+    build: ./pather
+    ports:
+      - "9003:9003"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    image: path-svc
+    env_file: pather/.env
+volumes:
+  data-svc-db:
