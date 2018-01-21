@@ -23,6 +23,16 @@ public class PathingRequest {
     @NotNull
     private double endLongitude;
 
+    public PathingRequest() {
+    }
+
+    public PathingRequest(UUID id, double startLatitude, double endLatitude, double startLongitude, double endLongitude) {
+        this.id = id;
+        this.startLatitude = startLatitude;
+        this.endLatitude = endLatitude;
+        this.startLongitude = startLongitude;
+        this.endLongitude = endLongitude;
+    }
 
     public UUID getId() {
         return id;
@@ -62,6 +72,21 @@ public class PathingRequest {
 
     public void setEndLongitude(double endLongitude) {
         this.endLongitude = endLongitude;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PathingRequest that = (PathingRequest) o;
+
+        return getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }
 
