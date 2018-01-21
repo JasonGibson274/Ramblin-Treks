@@ -73,8 +73,6 @@ public class DataService {
     }
 
     public void createSimplifiedCsv(HttpServletResponse response) throws IOException {
-        MapGenerator mapGenerator = new MapGenerator(33.7689984,33.7866378,-84.4104695,
-                -84.3862009, 0.001, 0.0001, 0.002);
         String csvFileName = "locations.csv";
 
         response.setContentType("text/csv");
@@ -85,7 +83,7 @@ public class DataService {
                 csvFileName);
         response.setHeader(headerKey, headerValue);
 
-        List<PathLocation> locations = mapGenerator.voxelGrid(findAllPathLocations());
+        List<PathLocation> locations = getSimpleGraph();
 
         // uses the Super CSV API to generate CSV data from the model data
         ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
@@ -151,5 +149,12 @@ public class DataService {
 
     public void deleteLocation(UUID id) {
         pathLocationRepository.delete(id);
+    }
+
+    public List<PathLocation> getSimpleGraph() {
+        MapGenerator mapGenerator = new MapGenerator(33.7689984,33.7866378,-84.4104695,
+                -84.3862009, 0.001, 0.0001, 0.002);
+        List<PathLocation> locations = mapGenerator.voxelGrid(findAllPathLocations());
+        return locations;
     }
 }

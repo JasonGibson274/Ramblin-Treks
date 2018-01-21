@@ -3,6 +3,7 @@ package data_svc;
 import data_svc.entities.BusPosition;
 import data_svc.entities.PathLocation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,5 +60,10 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, value = "/simplified/csv")
     public void downloadCSVSimple(HttpServletResponse response) throws IOException {
         dataService.createSimplifiedCsv(response);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/simplified/path", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody List<PathLocation> getSimple() throws IOException {
+        return dataService.getSimpleGraph();
     }
 }

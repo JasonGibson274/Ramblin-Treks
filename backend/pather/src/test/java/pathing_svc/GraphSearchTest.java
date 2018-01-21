@@ -44,7 +44,7 @@ public class GraphSearchTest {
 
         for(int i = 0; i < 10; i++) {
             UUID uuid = UUID.randomUUID();
-            SearchLocation temp = new SearchLocation();
+            SearchLocation temp = new SearchLocation(uuid, 0, 0, null);
             children.put(uuid, temp);
             when(mockSearchLocationRepository.findOne(uuid)).thenReturn(temp);
         }

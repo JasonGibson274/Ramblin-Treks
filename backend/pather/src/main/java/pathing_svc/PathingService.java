@@ -1,12 +1,18 @@
 package pathing_svc;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import pathing_svc.entities.PathingRequest;
 import pathing_svc.entities.PathingRequestRepository;
 import pathing_svc.entities.SearchLocation;
 import pathing_svc.entities.SearchLocationRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,18 +21,45 @@ public class PathingService {
 
     private final PathingRequestRepository pathingRequestRepository;
     private final SearchLocationRepository searchLocationRepository;
+    private final RestTemplate restTemplate;
 
+    @Autowired
     public PathingService(PathingRequestRepository pathingRequestRepository, SearchLocationRepository searchLocationRepository) {
         this.pathingRequestRepository = pathingRequestRepository;
         this.searchLocationRepository = searchLocationRepository;
+        this.restTemplate = new RestTemplate();
     }
 
     String getPath(UUID id, JSONObject request) {
+        pullGraphIfAbsent();
         PathingRequest pathingRequest = findOrCreate(id, request);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
         List<SearchLocation> path = search.aStar(searchLocationRepository);
         return serializePath(path);
+    }
+
+    void pullGraphIfAbsent() {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:9001/data/simplified/path",
+                String.class);
+
+        if (HttpStatus.OK == response.getStatusCode()) {
+            JSONObject object = new JSONObject(response);
+            JSONArray body = new JSONArray(object.getString("body"));
+            for(int i = 0; i < body.length(); i++) {
+                JSONObject current = body.getJSONObject(i);
+                SearchLocation newLocation = new SearchLocation();
+                newLocation.setLatitude(current.getDouble("latitude"));
+                newLocation.setLongitude(current.getDouble("longitude"));
+                newLocation.setId(UUID.fromString(current.getString("id")));
+                JSONArray neighbors = current.getJSONArray("neighbors");
+                HashSet<UUID> neighborList = new HashSet<>();
+                for(int j = 0; j < neighbors.length(); j++) {
+                    neighborList.add(UUID.fromString(neighbors.getString(0)));
+                }
+            }
+        }
     }
 
     String serializePath(List<SearchLocation> path) {
