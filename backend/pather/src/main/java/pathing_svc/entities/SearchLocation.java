@@ -4,8 +4,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,7 +14,7 @@ public class SearchLocation {
     private UUID id;
 
     @NotNull
-    private double latitiude;
+    private double latitude;
 
     @NotNull
     private double longitude;
@@ -27,9 +25,9 @@ public class SearchLocation {
     public SearchLocation() {
     }
 
-    public SearchLocation(UUID id, double latitiude, double longitude, Set<UUID> neighbors) {
+    public SearchLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors) {
         this.id = id;
-        this.latitiude = latitiude;
+        this.latitude = latitude;
         this.longitude = longitude;
         this.neighbors = neighbors;
     }
@@ -42,12 +40,12 @@ public class SearchLocation {
         this.id = id;
     }
 
-    public double getLatitiude() {
-        return latitiude;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLatitiude(double latitiude) {
-        this.latitiude = latitiude;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public double getLongitude() {
@@ -64,5 +62,20 @@ public class SearchLocation {
 
     public void setNeighbors(Set<UUID> neighbors) {
         this.neighbors = neighbors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SearchLocation that = (SearchLocation) o;
+
+        return getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }

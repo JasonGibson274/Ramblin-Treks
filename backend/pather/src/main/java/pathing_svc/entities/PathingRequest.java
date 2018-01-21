@@ -1,6 +1,7 @@
 package pathing_svc.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 public class PathingRequest {
     @NotNull
     @Id
+    @GeneratedValue
     private UUID id;
 
     @NotNull
@@ -26,8 +28,9 @@ public class PathingRequest {
     public PathingRequest() {
     }
 
-    public PathingRequest(UUID id, double startLatitude, double endLatitude, double startLongitude, double endLongitude) {
-        this.id = id;
+
+
+    public PathingRequest(double startLatitude, double endLatitude, double startLongitude, double endLongitude) {
         this.startLatitude = startLatitude;
         this.endLatitude = endLatitude;
         this.startLongitude = startLongitude;

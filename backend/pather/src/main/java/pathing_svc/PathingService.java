@@ -21,7 +21,7 @@ public class PathingService {
         this.searchLocationRepository = searchLocationRepository;
     }
 
-    public String getPath(UUID id, JSONObject request) {
+    String getPath(UUID id, JSONObject request) {
         PathingRequest pathingRequest = findOrCreate(id, request);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
@@ -29,12 +29,12 @@ public class PathingService {
         return serializePath(path);
     }
 
-    private String serializePath(List<SearchLocation> path) {
+    String serializePath(List<SearchLocation> path) {
         JSONObject jsonObject = new JSONObject();
 
         for(int i = 0; i < path.size(); i++) {
             JSONObject node = new JSONObject();
-            node.put("latitude", path.get(i).getLatitiude());
+            node.put("latitude", path.get(i).getLatitude());
             node.put("longitude", path.get(i).getLongitude());
             jsonObject.put(String.valueOf(i), node);
         }
@@ -43,19 +43,19 @@ public class PathingService {
 
     SearchLocation[] findStartAndEndLocation(PathingRequest pathingRequest) {
         SearchLocation[] result = new SearchLocation[2];
-
+        double[] resultDist = new double[2];
         for(SearchLocation current: searchLocationRepository.findAll()) {
-            double distToStart = Math.sqrt(Math.pow(current.getLatitiude() - pathingRequest.getStartLatitude(), 2) +
-            Math.pow(current.getLongitude() - pathingRequest.getStartLongitude(), 2));
-            double distToEnd = Math.sqrt(Math.pow(current.getLatitiude() - pathingRequest.getEndLatitude(), 2) +
+            double distToStart = Math.sqrt(Math.pow(current.getLatitude() - pathingRequest.getStartLatitude(), 2) +
+                    Math.pow(current.getLongitude() - pathingRequest.getStartLongitude(), 2));
+            double distToEnd = Math.sqrt(Math.pow(current.getLatitude() - pathingRequest.getEndLatitude(), 2) +
                     Math.pow(current.getLongitude() - pathingRequest.getEndLongitude(), 2));
-            if(result[0] == null || distToStart < Math.sqrt(Math.pow(result[0].getLatitiude() - pathingRequest.getStartLatitude(), 2) +
-                    Math.pow(result[0].getLongitude() - pathingRequest.getStartLongitude(), 2))) {
+            if(result[0] == null || resultDist[0] > distToStart) {
                 result[0] = current;
+                resultDist[0] = distToStart;
             }
-            if(result[1] == null || distToEnd < Math.sqrt(Math.pow(result[1].getLatitiude() - pathingRequest.getEndLatitude(), 2) +
-                    Math.pow(result[1].getLongitude() - pathingRequest.getEndLongitude(), 2))) {
+            if(result[1] == null || resultDist[1] > distToEnd) {
                 result[1] = current;
+                resultDist[1] = distToEnd;
             }
         }
         return result;
@@ -64,7 +64,6 @@ public class PathingService {
     PathingRequest findOrCreate(UUID id, JSONObject request) {
         if(id == null || pathingRequestRepository.findOne(id) == null) {
             PathingRequest pathingRequest = new PathingRequest();
-            pathingRequest.setId(UUID.randomUUID());
             pathingRequest.setStartLatitude(request.getDouble("startLatitude"));
             pathingRequest.setStartLongitude(request.getDouble("startLongitude"));
             pathingRequest.setEndLatitude(request.getDouble("endLatitude"));

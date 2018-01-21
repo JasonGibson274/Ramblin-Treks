@@ -15,14 +15,14 @@ public class StateComparatorTest {
     @Test
     public void getHeuristicCostTest() {
         SearchLocation goal = new SearchLocation();
-        goal.setLatitiude(1);
+        goal.setLatitude(1);
         goal.setLongitude(2);
 
         StateComparator stateComparator = new StateComparator(goal);
 
         SearchLocation location = new SearchLocation();
         location.setLongitude(5);
-        location.setLatitiude(7);
+        location.setLatitude(7);
 
         double distance = stateComparator.getHeuristicCost(location);
         assertThat(distance, is(6.708203932499369));
@@ -31,7 +31,7 @@ public class StateComparatorTest {
     @Test
     public void getPathCostTestEmptyList() {
         SearchLocation goal = new SearchLocation();
-        goal.setLatitiude(5);
+        goal.setLatitude(5);
         goal.setLongitude(5);
 
         StateComparator stateComparator = new StateComparator(goal);
@@ -43,7 +43,7 @@ public class StateComparatorTest {
     @Test
     public void getPathCostTestNoH() {
         SearchLocation goal = new SearchLocation();
-        goal.setLatitiude(5);
+        goal.setLatitude(5);
         goal.setLongitude(5);
 
         StateComparator stateComparator = new StateComparator(goal);
@@ -51,7 +51,7 @@ public class StateComparatorTest {
         List<SearchLocation> path = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             SearchLocation current = new SearchLocation();
-            current.setLatitiude(i + 1);
+            current.setLatitude(i + 1);
             current.setLongitude(i + 1);
             path.add(current);
         }
@@ -62,14 +62,14 @@ public class StateComparatorTest {
     @Test
     public void verifyStateComparatorCompare() {
         SearchLocation goal = new SearchLocation();
-        goal.setLatitiude(5);
+        goal.setLatitude(5);
         goal.setLongitude(5);
 
         StateComparator stateComparator = new StateComparator(goal);
         List<SearchLocation> path1 = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             SearchLocation current = new SearchLocation();
-            current.setLatitiude(i + 1);
+            current.setLatitude(i + 1);
             current.setLongitude(i + 1);
             path1.add(current);
         }
@@ -77,7 +77,7 @@ public class StateComparatorTest {
         List<SearchLocation> path2 = new ArrayList<>();
         for(int i = 0; i < 6; i++) {
             SearchLocation current = new SearchLocation();
-            current.setLatitiude(i + 1);
+            current.setLatitude(i + 1);
             current.setLongitude(i + 1);
             path2.add(current);
         }

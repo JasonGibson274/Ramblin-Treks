@@ -4,29 +4,29 @@ import pathing_svc.entities.SearchLocation;
 import pathing_svc.entities.SearchLocationRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GraphSearch {
     private final SearchLocation start;
     private final SearchLocation goal;
 
 
-    public GraphSearch(SearchLocation start, SearchLocation goal) {
+    GraphSearch(SearchLocation start, SearchLocation goal) {
         this.start = start;
         this.goal = goal;
     }
 
-    public List<SearchLocation> aStar(SearchLocationRepository searchLocationRepository) {
+    List<SearchLocation> aStar(SearchLocationRepository searchLocationRepository) {
         StateComparator comparator = new StateComparator(goal);
-        PriorityQueue<List<SearchLocation>> frontier = new PriorityQueue<List<SearchLocation>>(Math.toIntExact(searchLocationRepository.count()), comparator);
+        PriorityQueue<List<SearchLocation>> frontier = new PriorityQueue<>(Math.toIntExact(searchLocationRepository.count()), comparator);
         Set<SearchLocation> expanded = new HashSet<>(Math.toIntExact(searchLocationRepository.count()));
         frontier.add(Collections.singletonList(start));
         while(!frontier.isEmpty()) {
             List<SearchLocation> current = frontier.poll();
-            if(isGoal(current.get(current.size()), goal)) {
+            if(isGoal(current.get(current.size() - 1), goal)) {
                 return current;
             }
-            if(!expanded.contains(current)) {
+            if(!expanded.contains(current.get(current.size() - 1))) {
+                expanded.add(current.get(current.size() - 1));
                 for(SearchLocation location : generateSuccessors(current.get(current.size() - 1), searchLocationRepository)) {
                     List<SearchLocation> temp = new ArrayList<>(current);
                     temp.add(location);
