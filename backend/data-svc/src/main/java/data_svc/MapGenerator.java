@@ -1,7 +1,10 @@
 package data_svc;
 
 import data_svc.entities.PathLocation;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.nio.file.Path;
 import java.util.*;
 
 public class MapGenerator {
@@ -28,8 +31,8 @@ public class MapGenerator {
 
     public String generateMap(List<PathLocation> pathLocations) {
         List<PathLocation> reduced = voxelGrid(pathLocations);
-        Map<UUID, List<PathLocation>> graph = findNeighbors(reduced);
-        Map<UUID, List<PathLocation>> graphSimplified = simplifyMap(graph);
+        Map<PathLocation, List<UUID>> graph = findNeighbors(reduced);
+        //Map<UUID, List<PathLocation>> graphSimplified = simplifyMap(graph);
         return serializeMap(graph);
     }
 
@@ -56,15 +59,15 @@ public class MapGenerator {
         return result;
     }
 
-    Map<UUID, List<PathLocation>> findNeighbors(List<PathLocation> pathLocations) {
-        Map<UUID, List<PathLocation>> result = new HashMap<>();
+    Map<PathLocation, List<UUID>> findNeighbors(List<PathLocation> pathLocations) {
+        Map<PathLocation, List<UUID>> result = new HashMap<>();
         for(PathLocation location1 : pathLocations) {
             for(PathLocation location2 : pathLocations) {
                 if(Math.sqrt(Math.pow(location1.getLatitude() - location2.getLatitude(), 2) +
                         Math.pow(location1.getLongitude() - location2.getLongitude(), 2)) < SEPARATION_DIST
                         && !location1.getId().equals(location2.getId())) {
-                    result.computeIfAbsent(location1.getId(), k -> new ArrayList<>());
-                    result.get(location1.getId()).add(location2);
+                    result.computeIfAbsent(location1, k -> new ArrayList<>());
+                    result.get(location1).add(location2.getId());
                 }
             }
         }
@@ -76,7 +79,20 @@ public class MapGenerator {
         return graph;
     }
 
-    String serializeMap(Map<UUID, List<PathLocation>> graph) {
-        return "";
+    String serializeMap(Map<PathLocation, List<UUID>> graph) {
+        JSONArray result = new JSONArray();
+        for(PathLocation current : graph.keySet()) {
+            JSONObject locationJson = new JSONObject();
+            locationJson.put("latitude", current.getLatitude());
+            locationJson.put("longitude", current.getLongitude());
+            locationJson.put("id", current.getId());
+            JSONArray neighbors = new JSONArray();
+            for(UUID uuid : graph.get(current)) {
+                neighbors.put(uuid);
+            }
+            locationJson.put("neighbors", neighbors);
+            result.put(locationJson);
+        }
+        return result.toString();
     }
 }

@@ -63,7 +63,7 @@ public class DataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/simplified/path", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody List<PathLocation> getSimple() throws IOException {
+    public @ResponseBody String getSimple() throws IOException {
         return dataService.getSimpleGraph();
     }
 }

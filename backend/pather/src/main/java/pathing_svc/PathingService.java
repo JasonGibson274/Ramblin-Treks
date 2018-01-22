@@ -40,23 +40,27 @@ public class PathingService {
     }
 
     void pullGraphIfAbsent() {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://localhost:9001/data/simplified/path",
-                String.class);
+        if(searchLocationRepository.count() == 0) {
+            ResponseEntity<String> response = restTemplate.getForEntity(
+                    "http://localhost:9001/data/simplified/path",
+                    String.class);
 
-        if (HttpStatus.OK == response.getStatusCode()) {
-            JSONObject object = new JSONObject(response);
-            JSONArray body = new JSONArray(object.getString("body"));
-            for(int i = 0; i < body.length(); i++) {
-                JSONObject current = body.getJSONObject(i);
-                SearchLocation newLocation = new SearchLocation();
-                newLocation.setLatitude(current.getDouble("latitude"));
-                newLocation.setLongitude(current.getDouble("longitude"));
-                newLocation.setId(UUID.fromString(current.getString("id")));
-                JSONArray neighbors = current.getJSONArray("neighbors");
-                HashSet<UUID> neighborList = new HashSet<>();
-                for(int j = 0; j < neighbors.length(); j++) {
-                    neighborList.add(UUID.fromString(neighbors.getString(0)));
+            if (HttpStatus.OK == response.getStatusCode()) {
+                JSONObject object = new JSONObject(response);
+                JSONArray body = new JSONArray(object.getString("body"));
+                for(int i = 0; i < body.length(); i++) {
+                    JSONObject current = body.getJSONObject(i);
+                    SearchLocation newLocation = new SearchLocation();
+                    newLocation.setLatitude(current.getDouble("latitude"));
+                    newLocation.setLongitude(current.getDouble("longitude"));
+                    newLocation.setId(UUID.fromString(current.getString("id")));
+                    JSONArray neighbors = current.getJSONArray("neighbors");
+                    HashSet<UUID> neighborList = new HashSet<>();
+                    for(int j = 0; j < neighbors.length(); j++) {
+                        neighborList.add(UUID.fromString(neighbors.getString(j)));
+                    }
+                    newLocation.setNeighbors(neighborList);
+                    searchLocationRepository.save(newLocation);
                 }
             }
         }

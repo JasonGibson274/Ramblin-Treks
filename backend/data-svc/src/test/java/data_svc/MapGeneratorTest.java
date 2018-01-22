@@ -80,13 +80,13 @@ public class MapGeneratorTest {
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 0.6));
         testCases.add(new PathLocation(UUID.randomUUID(), 0.7, 0.7));
 
-        Map<UUID, List<PathLocation>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
         assertThat(result.keySet().size(), is(4));
 
-        for(UUID currentKey : result.keySet()) {
-            assertThat(result.get(currentKey).size(), is(3));
-            for(PathLocation current : result.get(currentKey)) {
-                assertThat(current.getId(), is(not(currentKey)));
+        for(PathLocation current : result.keySet()) {
+            assertThat(result.get(current).size(), is(3));
+            for(UUID currentId : result.get(current)) {
+                assertThat(current.getId(), is(not(currentId)));
             }
         }
     }
@@ -99,7 +99,7 @@ public class MapGeneratorTest {
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 1.6));
         testCases.add(new PathLocation(UUID.randomUUID(), 2.7, 2.7));
 
-        Map<UUID, List<PathLocation>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
         assertThat(result.keySet().size(), is(0));
     }
 
