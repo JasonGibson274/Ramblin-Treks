@@ -42,7 +42,7 @@ public class PathingService {
     void pullGraphIfAbsent() {
         if(searchLocationRepository.count() == 0) {
             ResponseEntity<String> response = restTemplate.getForEntity(
-                    "http://localhost:9001/data/simplified/path",
+                    "http://jasongibson274.hopto.org:9001/data/simplified/path",
                     String.class);
 
             if (HttpStatus.OK == response.getStatusCode()) {
