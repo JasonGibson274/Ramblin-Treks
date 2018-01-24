@@ -67,15 +67,15 @@ public class PathingService {
     }
 
     String serializePath(List<SearchLocation> path) {
-        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
 
         for(int i = 0; i < path.size(); i++) {
             JSONObject node = new JSONObject();
             node.put("latitude", path.get(i).getLatitude());
             node.put("longitude", path.get(i).getLongitude());
-            jsonArray.put(i, node);
+            jsonObject.put(String.valueOf(i), node);
         }
-        return jsonArray.toString();
+        return jsonObject.toString();
     }
 
     SearchLocation[] findStartAndEndLocation(PathingRequest pathingRequest) {
