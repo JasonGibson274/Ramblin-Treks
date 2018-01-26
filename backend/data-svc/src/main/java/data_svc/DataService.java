@@ -74,7 +74,7 @@ public class DataService {
 
     public void createSimplifiedCsv(HttpServletResponse response) throws IOException {
         MapGenerator mapGenerator = new MapGenerator(33.7689984,33.7866378,-84.4104695,
-                -84.3862009, 0.001, 0.0001, 0.002);
+                -84.3862009, 0.0002, 0.0001, 0.0002);
 
         String csvFileName = "locations.csv";
 
