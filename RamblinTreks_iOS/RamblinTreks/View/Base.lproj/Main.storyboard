@@ -6,6 +6,9 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -19,41 +22,57 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EQW-xa-22e" customClass="GMSMapView">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Current Location" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="GhZ-U4-NYI">
-                                        <rect key="frame" x="68" y="59" width="291" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="textColor" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <button opaque="NO" contentMode="center" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nBQ-RW-MnI">
-                                        <rect key="frame" x="8" y="47" width="55" height="55"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" image="hamburger_menu"/>
-                                    </button>
-                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="khk" borderStyle="roundedRect" placeholder="Destination" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="A9f-qW-WVd">
-                                        <rect key="frame" x="68" y="107" width="291" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="textColor" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
+                            <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nBQ-RW-MnI">
+                                <rect key="frame" x="20" y="40" width="45" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="nBQ-RW-MnI" secondAttribute="height" multiplier="1:1" id="GFr-Tm-tCS"/>
+                                </constraints>
+                                <state key="normal" image="hamburger_menu"/>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Start" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="GhZ-U4-NYI" userLabel="Start Text Field" customClass="KaedeTextField" customModule="TextFieldEffects">
+                                <rect key="frame" x="75" y="47.5" width="262.5" height="30"/>
+                                <color key="textColor" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
+                                        <color key="value" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="End" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="A9f-qW-WVd" userLabel="End Text Field" customClass="KaedeTextField" customModule="TextFieldEffects">
+                                <rect key="frame" x="75" y="87.5" width="262.5" height="30"/>
+                                <color key="textColor" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
+                                        <color key="value" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="GhZ-U4-NYI" firstAttribute="leading" secondItem="nBQ-RW-MnI" secondAttribute="trailing" constant="10" id="0oh-sM-U4K"/>
+                            <constraint firstItem="A9f-qW-WVd" firstAttribute="trailing" secondItem="GhZ-U4-NYI" secondAttribute="trailing" id="7JN-8g-7Ai"/>
+                            <constraint firstItem="GhZ-U4-NYI" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.7" id="BjZ-Kj-zk8"/>
+                            <constraint firstItem="A9f-qW-WVd" firstAttribute="width" secondItem="GhZ-U4-NYI" secondAttribute="width" id="Cgn-3c-X7V"/>
                             <constraint firstItem="EQW-xa-22e" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Nij-Rq-hUk"/>
                             <constraint firstItem="EQW-xa-22e" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="Uc5-Ol-azN"/>
+                            <constraint firstItem="nBQ-RW-MnI" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.12" id="YcX-mc-ogh"/>
+                            <constraint firstItem="A9f-qW-WVd" firstAttribute="top" secondItem="GhZ-U4-NYI" secondAttribute="bottom" constant="10" id="Z8r-QA-3ku"/>
                             <constraint firstItem="EQW-xa-22e" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="lat-hd-W7C"/>
+                            <constraint firstItem="A9f-qW-WVd" firstAttribute="leading" secondItem="GhZ-U4-NYI" secondAttribute="leading" id="mK2-SO-TQ8"/>
                             <constraint firstItem="EQW-xa-22e" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="qmH-aJ-cFm"/>
+                            <constraint firstItem="GhZ-U4-NYI" firstAttribute="centerY" secondItem="nBQ-RW-MnI" secondAttribute="centerY" id="rse-fD-LiU"/>
+                            <constraint firstItem="nBQ-RW-MnI" firstAttribute="leading" secondItem="EWb-Ww-I02" secondAttribute="leading" constant="20" id="uL4-65-kLv"/>
+                            <constraint firstItem="nBQ-RW-MnI" firstAttribute="top" secondItem="EWb-Ww-I02" secondAttribute="top" constant="20" id="vHS-lF-ZR3"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="EWb-Ww-I02"/>
                     </view>
-                    <navigationItem key="navigationItem" id="sKF-RP-Qek">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="hamburger_menu" landscapeImage="hamburger_menu" largeContentSizeImage="hamburger_menu" style="plain" id="jRM-C5-W6h"/>
-                    </navigationItem>
                     <connections>
                         <outlet property="currentLocationTextField" destination="GhZ-U4-NYI" id="UCp-gc-ovI"/>
                         <outlet property="destinationTextField" destination="A9f-qW-WVd" id="Vpi-xO-Bu8"/>
