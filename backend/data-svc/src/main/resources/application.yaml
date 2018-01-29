@@ -1,0 +1,10 @@
+server:
+  port: 9001
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://data-svc-db:5432/postgres
+    password: postgres
+    username: postgres
