@@ -11,7 +11,11 @@ import pathing_svc.entities.PathingRequest;
 import pathing_svc.entities.PathingRequestRepository;
 import pathing_svc.entities.SearchLocation;
 import pathing_svc.entities.SearchLocationRepository;
+import trek_utils.TrekUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -75,6 +79,8 @@ public class PathingService {
             node.put("longitude", path.get(i).getLongitude());
             jsonObject.put(String.valueOf(i), node);
         }
+        jsonObject.put("orientation", TrekUtils.getBearing(path.get(0).getLatitude(), path.get(0).getLongitude(),
+                path.get(path.size() - 1).getLatitude(), path.get(path.size() - 1).getLongitude()));
         return jsonObject.toString();
     }
 
@@ -116,6 +122,23 @@ public class PathingService {
                 pathingRequestRepository.save(pathingRequest);
             }
             return pathingRequest;
+        }
+    }
+
+    public void getPathCsv(UUID id, HttpServletResponse response, double startLat, double startLon, double endtLat, double endLon) {
+        pullGraphIfAbsent();
+        PathingRequest pathingRequest = new PathingRequest();
+        pathingRequest.setStartLatitude(startLat);
+        pathingRequest.setStartLongitude(startLon);
+        pathingRequest.setEndLatitude(endtLat);
+        pathingRequest.setEndLongitude(endLon);
+        SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
+        GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
+        List<SearchLocation> path = search.aStar(searchLocationRepository);
+        try {
+            TrekUtils.createCsv(response, new ArrayList<>(path));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,6 +1,7 @@
 package pathing_svc;
 
 import pathing_svc.entities.SearchLocation;
+import trek_utils.TrekUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,13 +25,14 @@ public class StateComparator implements Comparator<List<SearchLocation>> {
             return 0;
         }
         for(int i = 0; i < list.size() - 1; i++) {
-            result += Utilities.distance(list.get(i), list.get(i + 1));
+            result += TrekUtils.getDistanceInMetersHaversine(list.get(i).getLatitude(), list.get(i).getLongitude(),
+                    list.get(i + 1).getLatitude(), list.get(i + 1).getLongitude());
         }
         result += getHeuristicCost(list.get(list.size() - 1));
         return result;
     }
 
     double getHeuristicCost(SearchLocation location) {
-        return Utilities.distance(location, goal);
+        return TrekUtils.getDistanceInMetersHaversine(location.getLatitude(), location.getLongitude(), goal.getLatitude(), goal.getLongitude());
     }
 }

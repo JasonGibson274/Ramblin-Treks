@@ -14,9 +14,11 @@ import org.springframework.web.client.RestTemplate;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
+import trek_utils.TrekUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,64 +46,13 @@ public class DataService {
     }
 
     public void createCSV(HttpServletResponse response) throws IOException {
-        String csvFileName = "locations.csv";
-
-        response.setContentType("text/csv");
-
-        // creates mock data
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"",
-                csvFileName);
-        response.setHeader(headerKey, headerValue);
-
-        List<PathLocation> locations = findAllPathLocations();
-
-        // uses the Super CSV API to generate CSV data from the model data
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
-                CsvPreference.STANDARD_PREFERENCE);
-
-        String[] header = {"id", "latitude", "longitude"};
-
-        csvWriter.writeHeader(header);
-
-        for (PathLocation loc : locations) {
-            //String[] temp = {"getId"};
-            csvWriter.write(loc, header);
-        }
-
-        csvWriter.close();
+        TrekUtils.createCsv(response, new ArrayList<>(pathLocationRepository.findAll()));
     }
 
     public void createSimplifiedCsv(HttpServletResponse response) throws IOException {
-        MapGenerator mapGenerator = new MapGenerator(33.7689984,33.7866378,-84.4104695,
-                -84.3862009, 0.0002, 0.0001, 0.0002);
-
-        String csvFileName = "locations.csv";
-
-        response.setContentType("text/csv");
-
-        // creates mock data
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"",
-                csvFileName);
-        response.setHeader(headerKey, headerValue);
-
+        MapGenerator mapGenerator = createGenerator();
         List<PathLocation> locations = mapGenerator.voxelGrid(pathLocationRepository.findAll());
-
-        // uses the Super CSV API to generate CSV data from the model data
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(),
-                CsvPreference.STANDARD_PREFERENCE);
-
-        String[] header = {"id", "latitude", "longitude"};
-
-        csvWriter.writeHeader(header);
-
-        for (PathLocation loc : locations) {
-            //String[] temp = {"getId"};
-            csvWriter.write(loc, header);
-        }
-
-        csvWriter.close();
+        TrekUtils.createCsv(response, new ArrayList<>(locations));
     }
 
     public void saveCsv(String csv) {
@@ -155,9 +106,12 @@ public class DataService {
     }
 
     public String getSimpleGraph() {
-        MapGenerator mapGenerator = new MapGenerator(33.7689984,33.7866378,-84.4104695,
-                -84.3862009, 0.0002, 0.0001, 0.002);
-        String locations = mapGenerator.generateMap(findAllPathLocations());
-        return locations;
+        MapGenerator mapGenerator = createGenerator();
+        return mapGenerator.generateMap(findAllPathLocations());
+    }
+
+    private MapGenerator createGenerator() {
+        return new MapGenerator(33.7689984,33.7866378,-84.4104695,
+                -84.3862009, 15, 0.0001, 0.002);
     }
 }

@@ -16,6 +16,7 @@
     </parent>
 
     <modules>
+        <module>trek-utils</module>
         <module>data-svc</module>
         <module>pather</module>
     </modules>

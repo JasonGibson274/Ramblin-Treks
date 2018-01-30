@@ -25,7 +25,7 @@ public class StateComparatorTest {
         location.setLatitude(7);
 
         double distance = stateComparator.getHeuristicCost(location);
-        assertThat(distance, is(6.708203932499369));
+        assertThat(distance, is(746321.3472072134));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class StateComparatorTest {
             path.add(current);
         }
         double cost = stateComparator.getPathCost(path);
-        assertThat(cost, is(5.656854249492381));
+        assertThat(cost, is(629223.0107907));
     }
 
     @Test

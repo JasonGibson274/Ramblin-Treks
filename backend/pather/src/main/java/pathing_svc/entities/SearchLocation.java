@@ -78,4 +78,9 @@ public class SearchLocation {
     public int hashCode() {
         return getId().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id) + "," + String.valueOf(latitude) + "," + String.valueOf(longitude);
+    }
 }

@@ -72,4 +72,9 @@ public class PathLocation {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id) + "," + String.valueOf(latitude) + "," + String.valueOf(longitude);
+    }
 }
