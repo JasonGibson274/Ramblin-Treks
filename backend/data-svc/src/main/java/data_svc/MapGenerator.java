@@ -43,8 +43,8 @@ public class MapGenerator {
      * @return
      */
     List<PathLocation> voxelGrid(List<PathLocation> pathLocations) {
-        boolean[][] voxelGrid = new boolean[(int) Math.round((MAX_LONGITUDE - MIN_LONGITUDE) / VOXEL_RESOLUTION)]
-                [(int) Math.round((MAX_LATITUDE - MIN_LATITUDE)/ VOXEL_RESOLUTION)];
+        boolean[][] voxelGrid = new boolean[(int) Math.round((MAX_LONGITUDE - MIN_LONGITUDE) / VOXEL_RESOLUTION) * 2]
+                [(int) Math.round((MAX_LATITUDE - MIN_LATITUDE)/ VOXEL_RESOLUTION) * 2];
         List<PathLocation> result = new ArrayList<>(pathLocations.size());
         for(PathLocation current : pathLocations) {
             if(current.getLatitude() >= MIN_LATITUDE && current.getLatitude() < MAX_LATITUDE &&
