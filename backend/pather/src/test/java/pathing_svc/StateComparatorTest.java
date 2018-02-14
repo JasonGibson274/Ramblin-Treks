@@ -56,7 +56,7 @@ public class StateComparatorTest {
             path.add(current);
         }
         double cost = stateComparator.getPathCost(path);
-        assertThat(cost, is(629223.0107907));
+        assertThat(cost, is(449445.00770764286));
     }
 
     @Test

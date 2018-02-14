@@ -8,6 +8,8 @@ import java.util.List;
 
 public class StateComparator implements Comparator<List<SearchLocation>> {
 
+    private final double walkingSpeed = 1.4; //in m/s
+
     private final SearchLocation goal;
 
     public StateComparator(SearchLocation goal) {
@@ -29,7 +31,7 @@ public class StateComparator implements Comparator<List<SearchLocation>> {
                     list.get(i + 1).getLatitude(), list.get(i + 1).getLongitude());
         }
         result += getHeuristicCost(list.get(list.size() - 1));
-        return result;
+        return result / walkingSpeed;
     }
 
     double getHeuristicCost(SearchLocation location) {

@@ -13,12 +13,13 @@ import pathing_svc.entities.SearchLocation;
 import pathing_svc.entities.SearchLocationRepository;
 import trek_utils.TrekUtils;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PathingService {
@@ -34,8 +35,15 @@ public class PathingService {
         this.restTemplate = new RestTemplate();
     }
 
+    @PostConstruct
+    public void setUpScheduler() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        System.out.println("scheduler set up");
+        scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.SECONDS);
+    }
+
     String getPath(UUID id, JSONObject request) {
-        pullGraphIfAbsent();
+        pullGraphIfAbsent(false);
         PathingRequest pathingRequest = findOrCreate(id, request);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
@@ -43,8 +51,8 @@ public class PathingService {
         return serializePath(path);
     }
 
-    void pullGraphIfAbsent() {
-        if(searchLocationRepository.count() == 0) {
+    private void pullGraphIfAbsent(boolean force) {
+        if(searchLocationRepository.count() == 0 || force) {
             ResponseEntity<String> response = restTemplate.getForEntity(
                     "http://jasongibson274.hopto.org:9001/data/simplified/path",
                     String.class);
@@ -70,7 +78,7 @@ public class PathingService {
         }
     }
 
-    String serializePath(List<SearchLocation> path) {
+    private String serializePath(List<SearchLocation> path) {
         JSONObject jsonObject = new JSONObject();
 
         for(int i = 0; i < path.size(); i++) {
@@ -126,7 +134,7 @@ public class PathingService {
     }
 
     public void getPathCsv(UUID id, HttpServletResponse response, double startLat, double startLon, double endtLat, double endLon) {
-        pullGraphIfAbsent();
+        pullGraphIfAbsent(false);
         PathingRequest pathingRequest = new PathingRequest();
         pathingRequest.setStartLatitude(startLat);
         pathingRequest.setStartLongitude(startLon);
@@ -140,5 +148,14 @@ public class PathingService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void cleanUp() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        pathingRequestRepository.findAllByTimeStampBefore(calendar.getTime()).forEach(object -> pathingRequestRepository.delete(object.getId()));
+        searchLocationRepository.deleteAll();
+        pullGraphIfAbsent(true);
+        System.out.println("I have " + searchLocationRepository.count() + " points");
     }
 }
