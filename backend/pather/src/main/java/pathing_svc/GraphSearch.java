@@ -34,7 +34,7 @@ public class GraphSearch {
                 }
             }
         }
-        return null;
+        throw new NoPathException("");
     }
 
     Set<SearchLocation> generateSuccessors(SearchLocation location, SearchLocationRepository searchLocationRepository) {

@@ -39,7 +39,7 @@ public class PathingService {
     public void setUpScheduler() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         System.out.println("scheduler set up");
-        scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.MINUTES);
     }
 
     String getPath(UUID id, JSONObject request) {
