@@ -112,6 +112,6 @@ public class DataService {
 
     private MapGenerator createGenerator() {
         return new MapGenerator(33.7689984,33.7866378,-84.4104695,
-                -84.3862009, 15, 0.0001, 0.002);
+                -84.3862009, 30, 0.0001, 0.002);
     }
 }
