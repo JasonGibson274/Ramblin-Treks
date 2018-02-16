@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PathingRequestRepository extends CrudRepository<PathingRequest, UUID> {
-    public List<PathingRequest> findAllByTimeStampBefore(Date time);
-    public PathingRequest findFirstByTimeStamp(Date time);
+    List<PathingRequest> findAllByTimeStampBefore(Date time);
+    PathingRequest findFirstByTimeStamp(Date time);
 }

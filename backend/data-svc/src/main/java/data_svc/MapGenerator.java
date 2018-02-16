@@ -64,8 +64,6 @@ public class MapGenerator {
         Map<PathLocation, List<UUID>> result = new HashMap<>();
         for(PathLocation location1 : pathLocations) {
             for(PathLocation location2 : pathLocations) {
-                double temp = trek_utils.TrekUtils.getDistanceInMetersHaversine(location1.getLatitude(), location1.getLongitude(),
-                        location2.getLatitude(), location2.getLongitude());
                 if(trek_utils.TrekUtils.getDistanceInMetersHaversine(location1.getLatitude(), location1.getLongitude(),
                         location2.getLatitude(), location2.getLongitude()) < SEPARATION_DIST
                         && !location1.getId().equals(location2.getId())) {

@@ -31,7 +31,7 @@ public class PathingController {
     @RequestMapping(method = RequestMethod.GET, value = "/csv")
     public void downloadCSVSimple(@RequestParam(value = "cookie", required = false) UUID id, HttpServletResponse response,
                                   @RequestParam(value = "startLat") double startLat, @RequestParam(value = "startLon") double startLon,
-                                  @RequestParam(value = "endLat") double endtLat, @RequestParam(value = "endLon") double endLon) throws IOException {
+                                  @RequestParam(value = "endLat") double endtLat, @RequestParam(value = "endLon") double endLon) {
         pathingService.getPathCsv(id, response, startLat, startLon, endtLat, endLon);
     }
 }

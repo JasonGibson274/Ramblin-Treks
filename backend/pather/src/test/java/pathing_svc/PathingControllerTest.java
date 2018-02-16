@@ -22,7 +22,7 @@ public class PathingControllerTest {
     private PathingController pathingController;
 
     @Test
-    public void testExample() throws Exception {
+    public void testExample() {
         JSONObject jsonObject = new JSONObject();
 
 

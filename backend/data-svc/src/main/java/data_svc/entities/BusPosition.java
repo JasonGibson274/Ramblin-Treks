@@ -3,20 +3,20 @@ package data_svc.entities;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
 public class BusPosition {
+
+    // [{"id":"407","route":null,"lat":33.787301,"lng":-84.405353,"plat":33.78728,"plng":-84.405252,"speed":0.03704,"jobID":"0000","ts":"21:19:52"}
     @Id
     @GeneratedValue
     private UUID id;
 
     @NotNull
     private String busId;
-
-    @NotNull
-    private String route;
 
     @NotNull
     private Double latitude;
@@ -39,6 +39,9 @@ public class BusPosition {
     @NotNull
     private String ts;
 
+    @ManyToOne
+    private BusRoute busRoute;
+
     public UUID getId() {
         return id;
     }
@@ -53,14 +56,6 @@ public class BusPosition {
 
     public void setBusId(String busId) {
         this.busId = busId;
-    }
-
-    public String getRoute() {
-        return route;
-    }
-
-    public void setRoute(String route) {
-        this.route = route;
     }
 
     public Double getLatitude() {
@@ -117,5 +112,13 @@ public class BusPosition {
 
     public void setTs(String ts) {
         this.ts = ts;
+    }
+
+    public BusRoute getBusRoute() {
+        return busRoute;
+    }
+
+    public void setBusRoute(BusRoute busRoute) {
+        this.busRoute = busRoute;
     }
 }

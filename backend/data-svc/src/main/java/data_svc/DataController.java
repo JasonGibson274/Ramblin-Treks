@@ -44,7 +44,7 @@ public class DataController {
 
     @RequestMapping(method = RequestMethod.GET, value = "buses")
     public List<BusPosition> getBusesInformation() {
-        return dataService.getBusInformation();
+        return dataService.getAllBusPositions();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "count")
@@ -63,7 +63,7 @@ public class DataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/simplified/path", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody String getSimple() throws IOException {
+    public @ResponseBody String getSimple() {
         return dataService.getSimpleGraph();
     }
 }

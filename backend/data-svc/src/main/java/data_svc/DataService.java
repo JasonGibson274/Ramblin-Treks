@@ -1,9 +1,6 @@
 package data_svc;
 
-import data_svc.entities.BusPosition;
-import data_svc.entities.BusPositionRepository;
-import data_svc.entities.PathLocation;
-import data_svc.entities.PathLocationRepository;
+import data_svc.entities.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +13,43 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 import trek_utils.TrekUtils;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DataService {
 
     private final PathLocationRepository pathLocationRepository;
     private final BusPositionRepository busPositionRepository;
+    private final BusRouteRepository busRouteRepository;
+    private final BusStopRepository busStopRepository;
     private final RestTemplate restTemplate;
 
-    @Autowired
-    public DataService(PathLocationRepository pathLocationRepository, BusPositionRepository busPositionRepository) {
-        this.pathLocationRepository = pathLocationRepository;
-        this.busPositionRepository = busPositionRepository;
-        this.restTemplate = new RestTemplate();
+    @PostConstruct
+    public void setUpScheduler() {
+        GtBusesApiCalls.getRoutes(restTemplate, busRouteRepository);
+        GtBusesApiCalls.getStops(restTemplate, busStopRepository, busRouteRepository);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        System.out.println("scheduler set up");
+        scheduler.scheduleAtFixedRate(new GetBusesTask(this), 0, 3, TimeUnit.MINUTES);
     }
 
+    @Autowired
+    public DataService(PathLocationRepository pathLocationRepository, BusPositionRepository busPositionRepository,
+                       BusRouteRepository busRouteRepository, BusStopRepository busStopRepository) {
+        this.pathLocationRepository = pathLocationRepository;
+        this.busPositionRepository = busPositionRepository;
+        this.busRouteRepository = busRouteRepository;
+        this.busStopRepository = busStopRepository;
+        this.restTemplate = new RestTemplate();
+    }
     public void saveLocation(double latitude, double longitude) {
         final PathLocation path = new PathLocation(latitude, longitude);
         pathLocationRepository.save(path);
@@ -63,40 +77,6 @@ public class DataService {
         }
     }
 
-    public List<BusPosition> getAllBusPositions() {
-        return busPositionRepository.findAll();
-    }
-
-    public List<BusPosition> getBusInformation() {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://m.gatech.edu/api/buses/position",
-                String.class);
-
-        if (HttpStatus.OK == response.getStatusCode()) {
-
-            JSONObject object = new JSONObject(response);
-            JSONArray body = new JSONArray(object.getString("body"));
-            for(int i = 0; i < body.length(); i++) {
-                BusPosition busPosition = new BusPosition();
-                busPosition.setBusId(body.getJSONObject(i).getString("id"));
-                //busPosition.setRoute(body.getJSONObject(i).getString("route"));
-                busPosition.setRoute("null");
-                busPosition.setLatitude(new Double(body.getJSONObject(i).get("lat").toString()));
-                busPosition.setLongitude(new Double(body.getJSONObject(i).get("lng").toString()));
-                busPosition.setpLatitude(new Double(body.getJSONObject(i).get("plat").toString()));
-                busPosition.setpLongitude(new Double(body.getJSONObject(i).get("plng").toString()));
-                busPosition.setSpeed(new Double(body.getJSONObject(i).get("speed").toString()));
-                busPosition.setJobId(body.getJSONObject(i).getString("jobID"));
-                busPosition.setTs(body.getJSONObject(i).getString("ts"));
-                busPositionRepository.save(busPosition);
-            }
-
-            return busPositionRepository.findAll();
-        } else {
-            return null;
-        }
-    }
-
     public long getCount() {
         return pathLocationRepository.count();
     }
@@ -113,5 +93,13 @@ public class DataService {
     private MapGenerator createGenerator() {
         return new MapGenerator(33.7689984,33.7866378,-84.4104695,
                 -84.3862009, 30, 0.0001, 0.002);
+    }
+
+    public List<BusPosition> getAllBusPositions() {
+        return busPositionRepository.findAll();
+    }
+
+    public void grabAllBusPositions() {
+        GtBusesApiCalls.getBusInformation(restTemplate, busPositionRepository, busRouteRepository);
     }
 }
