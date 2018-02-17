@@ -1,16 +1,12 @@
 package data_svc.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
+import javax.validation.constraints.Size;
+import java.util.*;
 
 @Entity
 public class BusPosition {
-
-    // [{"id":"407","route":null,"lat":33.787301,"lng":-84.405353,"plat":33.78728,"plng":-84.405252,"speed":0.03704,"jobID":"0000","ts":"21:19:52"}
     @Id
     @GeneratedValue
     private UUID id;
@@ -25,22 +21,43 @@ public class BusPosition {
     private Double longitude;
 
     @NotNull
-    private Double pLatitude;
-
-    @NotNull
-    private Double pLongitude;
-
-    @NotNull
     private Double speed;
 
     @NotNull
-    private String jobId;
+    private Double heading;
 
     @NotNull
-    private String ts;
+    private Date time;
 
-    @ManyToOne
-    private BusRoute busRoute;
+    @NotNull
+    @Size(min = 1)
+    private String busRoute;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> arrivalTimes;
+
+    @NotNull
+    private Boolean fullFlag;
+
+    public BusPosition() {
+        arrivalTimes = new ArrayList<>();
+    }
+
+    public BusPosition(String busId, Double latitude, Double longitude, Double speed, Double heading, String busRoute, List<String> arrivalTimes, Boolean fullFlag) {
+        this.busId = busId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.speed = speed;
+        this.heading = heading;
+        this.busRoute = busRoute;
+        this.arrivalTimes = arrivalTimes;
+        this.fullFlag = fullFlag;
+    }
+
+    @PrePersist
+    public void setup() {
+        this.time = new Date();
+    }
 
     public UUID getId() {
         return id;
@@ -74,22 +91,6 @@ public class BusPosition {
         this.longitude = longitude;
     }
 
-    public Double getpLatitude() {
-        return pLatitude;
-    }
-
-    public void setpLatitude(Double pLatitude) {
-        this.pLatitude = pLatitude;
-    }
-
-    public Double getpLongitude() {
-        return pLongitude;
-    }
-
-    public void setpLongitude(Double pLongitude) {
-        this.pLongitude = pLongitude;
-    }
-
     public Double getSpeed() {
         return speed;
     }
@@ -98,27 +99,62 @@ public class BusPosition {
         this.speed = speed;
     }
 
-    public String getJobId() {
-        return jobId;
+    public Double getHeading() {
+        return heading;
     }
 
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
+    public void setHeading(Double heading) {
+        this.heading = heading;
     }
 
-    public String getTs() {
-        return ts;
+    public Date getTime() {
+        return time;
     }
 
-    public void setTs(String ts) {
-        this.ts = ts;
+    public void setTime(Date time) {
+        this.time = time;
     }
 
-    public BusRoute getBusRoute() {
+    public String getBusRoute() {
         return busRoute;
     }
 
-    public void setBusRoute(BusRoute busRoute) {
+    public void setBusRoute(String busRoute) {
         this.busRoute = busRoute;
+    }
+
+    public List<String> getArrivalTimes() {
+        return this.arrivalTimes;
+    }
+
+    public void setArrivalTimes(List<String> arrivalTimes) {
+        this.arrivalTimes = arrivalTimes;
+    }
+
+    public Map<Long, Long> getArrivalTimesMap() {
+        Map<Long, Long> result = new HashMap<>();
+        if(arrivalTimes != null) {
+            for(String time : arrivalTimes) {
+                String[] line = time.split(",");
+                result.put(Long.valueOf(line[0]), Long.valueOf(line[1]));
+            }
+        }
+        return result;
+    }
+
+
+    public Boolean getFullFlag() {
+        return fullFlag;
+    }
+
+    public void setFullFlag(Boolean fullFlag) {
+        this.fullFlag = fullFlag;
+    }
+
+    public void addArrivalTime(String s) {
+        if(arrivalTimes == null) {
+            this.arrivalTimes = new ArrayList<>();
+        }
+        this.arrivalTimes.add(s);
     }
 }

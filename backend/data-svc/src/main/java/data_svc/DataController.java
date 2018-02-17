@@ -66,4 +66,9 @@ public class DataController {
     public @ResponseBody String getSimple() {
         return dataService.getSimpleGraph();
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/buses/csv")
+    public void downloadCSVBuses(HttpServletResponse response) throws IOException {
+        dataService.createBusCsv(response);
+    }
 }

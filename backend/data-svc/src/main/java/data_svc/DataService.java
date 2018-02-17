@@ -1,11 +1,7 @@
 package data_svc;
 
 import data_svc.entities.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.supercsv.io.CsvBeanWriter;
@@ -17,11 +13,14 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class DataService {
@@ -38,17 +37,17 @@ public class DataService {
         GtBusesApiCalls.getStops(restTemplate, busStopRepository, busRouteRepository);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         System.out.println("scheduler set up");
-        scheduler.scheduleAtFixedRate(new GetBusesTask(this), 0, 3, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(new GetBusesTask(this), 0, 10, TimeUnit.SECONDS);
     }
 
     @Autowired
     public DataService(PathLocationRepository pathLocationRepository, BusPositionRepository busPositionRepository,
-                       BusRouteRepository busRouteRepository, BusStopRepository busStopRepository) {
+                       BusRouteRepository busRouteRepository, BusStopRepository busStopRepository, RestTemplate restTemplate) {
         this.pathLocationRepository = pathLocationRepository;
         this.busPositionRepository = busPositionRepository;
         this.busRouteRepository = busRouteRepository;
         this.busStopRepository = busStopRepository;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
     }
     public void saveLocation(double latitude, double longitude) {
         final PathLocation path = new PathLocation(latitude, longitude);
@@ -100,6 +99,68 @@ public class DataService {
     }
 
     public void grabAllBusPositions() {
-        GtBusesApiCalls.getBusInformation(restTemplate, busPositionRepository, busRouteRepository);
+        System.out.println("got all bus positions");
+        GtBusesApiCalls.getBusInformation(restTemplate, busPositionRepository, busRouteRepository, busStopRepository);
+    }
+
+    public void createBusCsv(HttpServletResponse response) {
+        String csvFileName = "idk.csv";
+
+        response.setContentType("text/csv");
+
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        response.setHeader(headerKey, headerValue);
+
+        // uses the Super CSV API to generate CSV data from the model data
+        ICsvBeanWriter csvWriter;
+        try {
+            csvWriter = new CsvBeanWriter(response.getWriter(),
+                    CsvPreference.STANDARD_PREFERENCE);
+
+            String[] header = {"latitude", "longitude", "speed", "heading", "time", "route"};
+            List<String> headers = Arrays.stream(header).collect(toList());
+
+            List<BusPosition> list = busPositionRepository.findAllByFullFlag(true);
+            if(list.size() == 0) {
+                return;
+            }
+            for(int i = 0; i < list.get(0).getArrivalTimes().size(); i++) {
+                headers.add(String.valueOf(i) + " stop");
+                headers.add(String.valueOf(i) + " stop time");
+            }
+
+            csvWriter.writeHeader(header);
+
+            for(BusPosition cur : list) {
+                StringBuilder result = new StringBuilder();
+                result.append(cur.getLatitude());
+                result.append(",");
+                result.append(cur.getLongitude());
+                result.append(",");
+                result.append(cur.getSpeed());
+                result.append(",");
+                result.append(cur.getHeading());
+                result.append(",");
+                result.append(cur.getTime());
+                result.append(",");
+                result.append(cur.getBusRoute());
+                result.append(",");
+                for(int i = 0; i < cur.getArrivalTimes().size(); i++) {
+                    result.append(cur.getArrivalTimes().get(i).split(",")[0]);
+                    result.append(",");
+                    result.append(cur.getArrivalTimes().get(i).split(",")[1]);
+                    result.append(",");
+                }
+                String temp = result.toString().substring(0, result.toString().length() - 1);
+                csvWriter.write(temp, header);
+            }
+
+            csvWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

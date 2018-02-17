@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface BusPositionRepository extends CrudRepository<BusPosition, UUID> {
     List<BusPosition> findAll();
+    List<BusPosition> findAllByBusIdAndFullFlag(String busId, Boolean fullFlag);
+    List<BusPosition> findAllByFullFlag(Boolean fullFlag);
 }
