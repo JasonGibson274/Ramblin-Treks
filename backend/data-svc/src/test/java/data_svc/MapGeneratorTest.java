@@ -1,14 +1,12 @@
 package data_svc;
 
 import data_svc.MapGenerator;
+import data_svc.entities.BusStop;
 import data_svc.entities.PathLocation;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
@@ -80,7 +78,7 @@ public class MapGeneratorTest {
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 0.6));
         testCases.add(new PathLocation(UUID.randomUUID(), 0.3, 0.3));
 
-        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases, new ArrayList<BusStop>());
         assertThat(result.keySet().size(), is(4));
 
         for(PathLocation current : result.keySet()) {
@@ -99,7 +97,7 @@ public class MapGeneratorTest {
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 1.6));
         testCases.add(new PathLocation(UUID.randomUUID(), 2.7, 2.7));
 
-        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases, new ArrayList<BusStop>());
         assertThat(result.keySet().size(), is(0));
     }
 

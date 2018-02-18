@@ -33,14 +33,14 @@ public class BusPosition {
     @Size(min = 1)
     private String busRoute;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> arrivalTimes;
+   // @ElementCollection(fetch = FetchType.EAGER)
+    //private List<String> arrivalTimes;
 
     @NotNull
     private Boolean fullFlag;
 
     public BusPosition() {
-        arrivalTimes = new ArrayList<>();
+        //arrivalTimes = new ArrayList<>();
     }
 
     public BusPosition(String busId, Double latitude, Double longitude, Double speed, Double heading, String busRoute, List<String> arrivalTimes, Boolean fullFlag) {
@@ -50,7 +50,7 @@ public class BusPosition {
         this.speed = speed;
         this.heading = heading;
         this.busRoute = busRoute;
-        this.arrivalTimes = arrivalTimes;
+        //this.arrivalTimes = arrivalTimes;
         this.fullFlag = fullFlag;
     }
 
@@ -123,7 +123,7 @@ public class BusPosition {
         this.busRoute = busRoute;
     }
 
-    public List<String> getArrivalTimes() {
+    /*public List<String> getArrivalTimes() {
         return this.arrivalTimes;
     }
 
@@ -140,7 +140,7 @@ public class BusPosition {
             }
         }
         return result;
-    }
+    }*/
 
 
     public Boolean getFullFlag() {
@@ -151,10 +151,10 @@ public class BusPosition {
         this.fullFlag = fullFlag;
     }
 
-    public void addArrivalTime(String s) {
+    /*public void addArrivalTime(String s) {
         if(arrivalTimes == null) {
             this.arrivalTimes = new ArrayList<>();
         }
         this.arrivalTimes.add(s);
-    }
+    }*/
 }

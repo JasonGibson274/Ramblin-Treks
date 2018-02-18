@@ -1,8 +1,10 @@
 package data_svc.entities;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.UUID;
 
 @Entity
 public class BusStop {
@@ -27,6 +29,9 @@ public class BusStop {
     @ManyToOne
     private BusRoute busRoute;
 
+    @NotNull
+    private UUID uuid;
+
     public BusStop() {}
 
     public BusStop(Long id, String stopName, double latitude, double longitude, String direction) {
@@ -35,6 +40,11 @@ public class BusStop {
         this.latitude = latitude;
         this.longitude = longitude;
         this.direction = direction;
+    }
+
+    @PrePersist
+    public void setUp() {
+        this.uuid = UUID.randomUUID();
     }
 
     public Long getId() {
@@ -83,5 +93,13 @@ public class BusStop {
 
     public void setBusRoute(BusRoute busRoute) {
         this.busRoute = busRoute;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

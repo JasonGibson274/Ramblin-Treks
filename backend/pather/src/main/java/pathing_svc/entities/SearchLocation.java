@@ -1,13 +1,12 @@
 package pathing_svc.entities;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class SearchLocation {
     @Id
     @NotNull
@@ -22,8 +21,7 @@ public class SearchLocation {
     @ElementCollection
     private Set<UUID> neighbors;
 
-    public SearchLocation() {
-    }
+    public SearchLocation() {}
 
     public SearchLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors) {
         this.id = id;

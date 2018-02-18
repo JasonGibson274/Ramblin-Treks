@@ -6,8 +6,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 import pathing_svc.entities.PathingRequest;
 import pathing_svc.entities.PathingRequestRepository;
 import pathing_svc.entities.SearchLocation;
@@ -32,6 +34,9 @@ public class PathingServiceTest {
 
     @Autowired
     private PathingRequestRepository pathingRequestRepository;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @Test
     public void findOrCreateTestNullId() {

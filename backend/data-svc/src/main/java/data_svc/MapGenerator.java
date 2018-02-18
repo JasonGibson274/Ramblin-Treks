@@ -1,6 +1,6 @@
 package data_svc;
 
-import data_svc.entities.PathLocation;
+import data_svc.entities.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,11 +30,25 @@ public class MapGenerator {
         // assert that sep > res
     }
 
-    public String generateMap(List<PathLocation> pathLocations) {
+    public String generateMap(List<PathLocation> pathLocations, List<BusStop> busStops, BusStopRepository busStopRepository) {
         List<PathLocation> reduced = voxelGrid(pathLocations);
-        Map<PathLocation, List<UUID>> graph = findNeighbors(reduced);
+        Map<PathLocation, List<UUID>> graph = findNeighbors(reduced, busStops);
+        Map<BusStop, List<UUID>> busGraph = findNeighborsBuses(graph, busStops);
         //Map<UUID, List<PathLocation>> graphSimplified = simplifyMap(graph);
-        return serializeMap(graph);
+        return serializeMap(graph, busGraph, busStopRepository);
+    }
+
+    Map<BusStop, List<UUID>> findNeighborsBuses(Map<PathLocation, List<UUID>> graph, List<BusStop> busStops) {
+        Map<BusStop, List<UUID>> result = new HashMap<>();
+        for(BusStop busStop : busStops) {
+            for(PathLocation pathLocation : graph.keySet()) {
+                if(TrekUtils.getDistanceInMetersHaversine(busStop.getLatitude(), busStop.getLongitude(), pathLocation.getLatitude(),  pathLocation.getLongitude()) < SEPARATION_DIST) {
+                    result.computeIfAbsent(busStop, k -> new ArrayList<>());
+                    result.get(busStop).add(pathLocation.getId());
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -60,7 +74,7 @@ public class MapGenerator {
         return result;
     }
 
-    Map<PathLocation, List<UUID>> findNeighbors(List<PathLocation> pathLocations) {
+    Map<PathLocation, List<UUID>> findNeighbors(List<PathLocation> pathLocations, List<BusStop> busStops) {
         Map<PathLocation, List<UUID>> result = new HashMap<>();
         for(PathLocation location1 : pathLocations) {
             for(PathLocation location2 : pathLocations) {
@@ -69,6 +83,14 @@ public class MapGenerator {
                         && !location1.getId().equals(location2.getId())) {
                     result.computeIfAbsent(location1, k -> new ArrayList<>());
                     result.get(location1).add(location2.getId());
+                }
+            }
+            for(BusStop location2 : busStops) {
+                if(trek_utils.TrekUtils.getDistanceInMetersHaversine(location1.getLatitude(), location1.getLongitude(),
+                        location2.getLatitude(), location2.getLongitude()) < SEPARATION_DIST
+                        && !location1.getId().equals(location2.getId())) {
+                    result.computeIfAbsent(location1, k -> new ArrayList<>());
+                    result.get(location1).add(location2.getUuid());
                 }
             }
         }
@@ -80,10 +102,11 @@ public class MapGenerator {
         return graph;
     }
 
-    String serializeMap(Map<PathLocation, List<UUID>> graph) {
+    String serializeMap(Map<PathLocation, List<UUID>> graph, Map<BusStop, List<UUID>> busGraph, BusStopRepository busStopRepository) {
         JSONArray result = new JSONArray();
         for(PathLocation current : graph.keySet()) {
             JSONObject locationJson = new JSONObject();
+            locationJson.put("type", "path");
             locationJson.put("latitude", current.getLatitude());
             locationJson.put("longitude", current.getLongitude());
             locationJson.put("id", current.getId());
@@ -92,6 +115,28 @@ public class MapGenerator {
                 neighbors.put(uuid);
             }
             locationJson.put("neighbors", neighbors);
+            result.put(locationJson);
+        }
+        for(BusStop current : busGraph.keySet()) {
+            JSONObject locationJson = new JSONObject();
+            locationJson.put("type", "bus");
+            locationJson.put("latitude", current.getLatitude());
+            locationJson.put("longitude", current.getLongitude());
+            locationJson.put("id", current.getId());
+            locationJson.put("color", current.getBusRoute().getRouteColor());
+            locationJson.put("name", current.getStopName());
+            locationJson.put("uuid", current.getUuid());
+            locationJson.put("route", current.getBusRoute().getRouteName());
+            JSONArray neighbors = new JSONArray();
+            for(UUID uuid : busGraph.get(current)) {
+                neighbors.put(uuid);
+            }
+            locationJson.put("neighbors", neighbors);
+            JSONArray busNeighbors = new JSONArray();
+            for(BusStop busStop : busStopRepository.findAllByBusRoute(current.getBusRoute())) {
+                busNeighbors.put(busStop.getId());
+            }
+            locationJson.put("busNeighbors", busNeighbors);
             result.put(locationJson);
         }
         return result.toString();

@@ -97,7 +97,7 @@ public class BusDataLoggingTest {
         assertThat(busPosition.getLongitude(), is(-84.395848));
     }
 
-    @Test
+    /*@Test
     public void parseResponseMultipleTest() {
         String body = "<?xml version=\"1.0\" encoding=\"utf-8\" ?> \n" +
                 "<body copyright=\"All data copyright Georgia Tech Campus 2018.\">\n" +
@@ -211,5 +211,5 @@ public class BusDataLoggingTest {
         assertThat(result.getArrivalTimesMap().size(), is(2));
         assertThat(result.getArrivalTimesMap().get(1L), greaterThan(0L));
         assertThat(result.getArrivalTimesMap().get(2L), greaterThan(0L));
-    }
+    }*/
 }

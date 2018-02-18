@@ -10,6 +10,7 @@ import trek_utils.TrekUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class GtBusesApiCalls {
 
@@ -45,9 +46,9 @@ public class GtBusesApiCalls {
                 busPosition.setFullFlag(false);
                 busPosition.setTime(new Date());
                 List<BusStop> possibleStops = busStopRepository.findAllByBusRoute(busRoute);
-                for(BusStop stop : possibleStops) {
+                /*for(BusStop stop : possibleStops) {
                     //System.out.println(TrekUtils.getDistanceInMetersHaversine(stop.getLatitude(), stop.getLongitude(), busPosition.getLatitude(), busPosition.getLongitude()));
-                    if(TrekUtils.getDistanceInMetersHaversine(stop.getLatitude(), stop.getLongitude(), busPosition.getLatitude(), busPosition.getLongitude()) < 20) {
+                    if(TrekUtils.getDistanceInMetersHaversine(stop.getLatitude(), stop.getLongitude(), busPosition.getLatitude(), busPosition.getLongitude()) < 10) {
                         //System.out.println("less than 20");
                         for(BusPosition currPosition : busPositionRepository.findAllByBusIdAndFullFlag(busPosition.getBusId(), Boolean.FALSE)) {
                             //System.out.println("I got here");
@@ -61,7 +62,7 @@ public class GtBusesApiCalls {
                             busPositionRepository.save(currPosition);
                         }
                     }
-                }
+                }*/
                 busPositionRepository.save(busPosition);
             }
         }

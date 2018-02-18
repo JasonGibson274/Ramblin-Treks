@@ -35,9 +35,10 @@ public class DataService {
     public void setUpScheduler() {
         GtBusesApiCalls.getRoutes(restTemplate, busRouteRepository);
         GtBusesApiCalls.getStops(restTemplate, busStopRepository, busRouteRepository);
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        System.out.println("scheduler set up");
-        scheduler.scheduleAtFixedRate(new GetBusesTask(this), 0, 10, TimeUnit.SECONDS);
+        //ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        //System.out.println("scheduler set up");
+        //System.out.println(busStopRepository.count());
+        //scheduler.scheduleAtFixedRate(new GetBusesTask(this), 0, 10, TimeUnit.SECONDS);
     }
 
     @Autowired
@@ -86,7 +87,7 @@ public class DataService {
 
     public String getSimpleGraph() {
         MapGenerator mapGenerator = createGenerator();
-        return mapGenerator.generateMap(findAllPathLocations());
+        return mapGenerator.generateMap(findAllPathLocations(), busStopRepository.findAll(), busStopRepository);
     }
 
     private MapGenerator createGenerator() {
@@ -127,7 +128,7 @@ public class DataService {
             if(list.size() == 0) {
                 return;
             }
-            for(int i = 0; i < list.get(0).getArrivalTimes().size(); i++) {
+            /*for(int i = 0; i < list.get(0).getArrivalTimes().size(); i++) {
                 headers.add(String.valueOf(i) + " stop");
                 headers.add(String.valueOf(i) + " stop time");
             }
@@ -156,7 +157,7 @@ public class DataService {
                 }
                 String temp = result.toString().substring(0, result.toString().length() - 1);
                 csvWriter.write(temp, header);
-            }
+            }*/
 
             csvWriter.close();
         } catch (IOException e) {

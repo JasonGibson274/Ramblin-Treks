@@ -4,9 +4,11 @@ package pathing_svc;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pathing_svc.entities.SearchLocation;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -33,5 +35,10 @@ public class PathingController {
                                   @RequestParam(value = "startLat") double startLat, @RequestParam(value = "startLon") double startLon,
                                   @RequestParam(value = "endLat") double endtLat, @RequestParam(value = "endLon") double endLon) {
         pathingService.getPathCsv(id, response, startLat, startLon, endtLat, endLon);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getAllLocations")
+    public List<SearchLocation> getAllSearchLocations() {
+        return pathingService.getAllSearchLocations();
     }
 }
