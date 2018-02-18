@@ -85,6 +85,11 @@ public class PathingService {
             JSONObject node = new JSONObject();
             node.put("latitude", path.get(i).getLatitude());
             node.put("longitude", path.get(i).getLongitude());
+	    if(i == 9 || i == 10) {
+		node.put("color", "#ff0000");
+            } else {
+		node.put("color", "#ff00ff");
+            }
             jsonObject.put(String.valueOf(i), node);
         }
         jsonObject.put("orientation", TrekUtils.getBearing(path.get(0).getLatitude(), path.get(0).getLongitude(),
