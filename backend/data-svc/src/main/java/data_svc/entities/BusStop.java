@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Entity
+@Table(name="BusStop")
 public class BusStop {
     @NotNull
     @Id
@@ -26,8 +27,9 @@ public class BusStop {
     @Size(min = 1)
     private String direction;
 
-    @ManyToOne
-    private BusRoute busRoute;
+    @NotNull
+    @Size(min = 1)
+    private String busRoute;
 
     @NotNull
     private UUID uuid;
@@ -87,11 +89,11 @@ public class BusStop {
         this.direction = direction;
     }
 
-    public BusRoute getBusRoute() {
+    public String getBusRoute() {
         return busRoute;
     }
 
-    public void setBusRoute(BusRoute busRoute) {
+    public void setBusRoute(String busRoute) {
         this.busRoute = busRoute;
     }
 

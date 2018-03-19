@@ -5,6 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Objects;
 
 //"keyForNextTime":"1795672596723","displayOn":"1","orderNumber":"1"}
@@ -27,8 +28,7 @@ public class BusRoute {
 
     private String keyForNextTime;
 
-    public BusRoute() {
-    }
+    public BusRoute() {}
 
     public BusRoute(String id, String routeName, String routeColor) {
         this.id = id;

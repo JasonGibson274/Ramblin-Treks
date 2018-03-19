@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BusStopRepository extends CrudRepository<BusStop, String> {
-    List<BusStop> findAllByBusRoute(BusRoute busRoute);
+    List<BusStop> findAllByBusRoute(String busRoute);
     List<BusStop> findAll();
 }

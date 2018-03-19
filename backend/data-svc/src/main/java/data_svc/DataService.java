@@ -87,7 +87,7 @@ public class DataService {
 
     public String getSimpleGraph() {
         MapGenerator mapGenerator = createGenerator();
-        return mapGenerator.generateMap(findAllPathLocations(), busStopRepository.findAll(), busStopRepository);
+        return mapGenerator.generateMap(findAllPathLocations(), busStopRepository.findAll(), busStopRepository, busRouteRepository);
     }
 
     private MapGenerator createGenerator() {

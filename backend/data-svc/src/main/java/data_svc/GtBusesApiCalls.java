@@ -45,7 +45,7 @@ public class GtBusesApiCalls {
                 busPosition.setSpeed(new Double(getString("speedKmHr", line)));
                 busPosition.setFullFlag(false);
                 busPosition.setTime(new Date());
-                List<BusStop> possibleStops = busStopRepository.findAllByBusRoute(busRoute);
+                //List<BusStop> possibleStops = busStopRepository.findAllByBusRoute(busRoute);
                 /*for(BusStop stop : possibleStops) {
                     //System.out.println(TrekUtils.getDistanceInMetersHaversine(stop.getLatitude(), stop.getLongitude(), busPosition.getLatitude(), busPosition.getLongitude()));
                     if(TrekUtils.getDistanceInMetersHaversine(stop.getLatitude(), stop.getLongitude(), busPosition.getLatitude(), busPosition.getLongitude()) < 10) {
@@ -113,7 +113,7 @@ public class GtBusesApiCalls {
             for(int i = 0; i < body.length(); i++) {
                 BusStop busStop = new BusStop();
                 String routeId = body.getJSONObject(i).getString("route_id");
-                busStop.setBusRoute(busRouteRepository.findOne(routeId));
+                busStop.setBusRoute(routeId);
                 busStop.setId(Long.valueOf(body.getJSONObject(i).getString("reference_stop_id")));
                 busStop.setStopName(body.getJSONObject(i).getString("stop_name"));
                 busStop.setDirection(body.getJSONObject(i).getString("trip_id"));
