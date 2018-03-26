@@ -1,6 +1,5 @@
 package pathing_svc;
 
-import io.swagger.models.auth.In;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +8,6 @@ import pathing_svc.entities.BusStopLocation;
 import pathing_svc.entities.BusStopLocationRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class UpdateBusEstimates implements Runnable {
 

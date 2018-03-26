@@ -1,13 +1,13 @@
 package pathing_svc;
 
 //import utilities.trek_utils.TrekUtils;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pathing_svc.entities.SearchLocation;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 

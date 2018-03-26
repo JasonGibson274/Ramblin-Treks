@@ -2,10 +2,8 @@ package data_svc.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Objects;
 
 //"keyForNextTime":"1795672596723","displayOn":"1","orderNumber":"1"}

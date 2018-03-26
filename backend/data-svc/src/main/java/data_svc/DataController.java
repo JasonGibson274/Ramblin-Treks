@@ -1,6 +1,5 @@
 package data_svc;
 
-import data_svc.entities.BusPosition;
 import data_svc.entities.PathLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,11 +41,6 @@ public class DataController {
         dataService.saveCsv(csv);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "buses")
-    public List<BusPosition> getBusesInformation() {
-        return dataService.getAllBusPositions();
-    }
-
     @RequestMapping(method = RequestMethod.GET, value = "count")
     public long getCount() {
         return dataService.getCount();
@@ -65,10 +59,5 @@ public class DataController {
     @RequestMapping(method = RequestMethod.GET, value = "/simplified/path", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody String getSimple() {
         return dataService.getSimpleGraph();
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/buses/csv")
-    public void downloadCSVBuses(HttpServletResponse response) throws IOException {
-        dataService.createBusCsv(response);
     }
 }

@@ -1,15 +1,14 @@
 package data_svc.entities;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Entity
-@Table(name="BusStop")
 public class BusStop {
-    @NotNull
     @Id
     @GeneratedValue
     private UUID id;

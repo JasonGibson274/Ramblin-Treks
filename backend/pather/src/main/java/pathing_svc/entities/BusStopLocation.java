@@ -19,9 +19,6 @@ public class BusStopLocation extends SearchLocation {
     @Size(min = 1)
     private String name;
 
-    @ElementCollection
-    private Set<UUID> busNeighbors;
-
     @NotNull
     @Size(min = 1)
     private String route;
@@ -32,11 +29,11 @@ public class BusStopLocation extends SearchLocation {
     public BusStopLocation() {
     }
 
-    public BusStopLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors, String color, String name, Set<UUID> busNeighbors, String route) {
+    public BusStopLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors, String color,
+                           String name, String route) {
         super(id, latitude, longitude, neighbors);
         this.color = color;
         this.name = name;
-        this.busNeighbors = busNeighbors;
         this.route = route;
     }
 
@@ -54,14 +51,6 @@ public class BusStopLocation extends SearchLocation {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<UUID> getBusNeighbors() {
-        return busNeighbors;
-    }
-
-    public void setBusNeighbors(Set<UUID> busNeighbors) {
-        this.busNeighbors = busNeighbors;
     }
 
     public String getRoute() {

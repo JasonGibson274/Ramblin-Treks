@@ -4,17 +4,16 @@ package pathing_svc;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import pathing_svc.entities.*;
+import pathing_svc.entities.BusStopLocation;
+import pathing_svc.entities.BusStopLocationRepository;
+import pathing_svc.entities.SearchLocation;
+import pathing_svc.entities.SearchLocationRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -89,8 +88,8 @@ public class GraphSearchTest {
     @Test
     public void testSearch1WithBuses() {
 
-        BusStopLocation b = new BusStopLocation(UUID.randomUUID(), 0.0, 0.1, null, "color", "name", null, "red");
-        BusStopLocation a = new BusStopLocation(UUID.randomUUID(), 100.0, 99.0, null,  "color", "name", null, "red");
+        BusStopLocation b = new BusStopLocation(UUID.randomUUID(), 0.0, 0.1, null, "color", "name", "red");
+        BusStopLocation a = new BusStopLocation(UUID.randomUUID(), 100.0, 99.0,  null, "color", "name", "red");
 
         Set<UUID> locations = new HashSet<>();
         locations.add(start.getId());
@@ -101,12 +100,6 @@ public class GraphSearchTest {
         locations = new HashSet<>();
         locations.add(a.getId());
         start.setNeighbors(locations);
-
-        Set<UUID> busNeighbors = new HashSet<>();
-        busNeighbors.add(a.getId());
-        busNeighbors.add(b.getId());
-        a.setBusNeighbors(busNeighbors);
-        b.setBusNeighbors(busNeighbors);
 
         List<BusStopLocation> allBusStopLocations = new ArrayList<>();
         allBusStopLocations.add(a);

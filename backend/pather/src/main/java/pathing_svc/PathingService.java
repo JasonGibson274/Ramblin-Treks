@@ -90,12 +90,6 @@ public class PathingService {
                             neighborList.add(UUID.fromString(neighbors.getString(j)));
                         }
                         newLocation.setNeighbors(neighborList);
-                        JSONArray busNeighbors = current.getJSONArray("busNeighbors");
-                        HashSet<UUID> busNeighborsList = new HashSet<>();
-                        for(int j = 0; j < busNeighbors.length(); j++) {
-                            busNeighborsList.add(UUID.fromString(busNeighbors.getString(j)));
-                        }
-                        newLocation.setBusNeighbors(busNeighborsList);
                         busStopLocationRepository.save(newLocation);
                     }
                 }

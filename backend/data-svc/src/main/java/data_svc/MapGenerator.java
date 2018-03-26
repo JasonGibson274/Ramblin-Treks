@@ -1,7 +1,6 @@
 package data_svc;
 
 import data_svc.entities.*;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import trek_utils.TrekUtils;
@@ -133,12 +132,6 @@ public class MapGenerator {
                 neighbors.put(uuid);
             }
             locationJson.put("neighbors", neighbors);
-            JSONArray busNeighbors = new JSONArray();
-            for(BusStop busStop : busStopRepository.findAllByBusRoute(busRoute.getId())) {
-                busNeighbors.put(busStop.getId());
-            }
-            locationJson.put("busNeighbors", busNeighbors);
-            result.put(locationJson);
         }
         return result.toString();
     }
