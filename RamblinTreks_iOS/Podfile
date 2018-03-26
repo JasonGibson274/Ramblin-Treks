@@ -9,5 +9,7 @@ target 'RamblinTreks' do
     pod 'GoogleMaps'
     pod 'TextFieldEffects'
     pod 'SideMenu'
+    pod 'SwiftyJSON'
+    pod 'Alamofire'
 
 end

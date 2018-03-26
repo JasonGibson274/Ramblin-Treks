@@ -8,115 +8,196 @@
 
 import UIKit
 import GoogleMaps
+import Alamofire
+import SwiftyJSON
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, CLLocationManagerDelegate {
+    
+    //Outlets for hamburger menu
+    @IBOutlet weak var mainViewTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mainViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mainView: UIView!
+    
     
     //UI elements outlets
-    @IBOutlet weak var hamMenu: UIButton!
-    @IBOutlet weak var currentLocationTextField: UITextField!
+    @IBOutlet weak var startingPointTextField: UITextField!
     @IBOutlet weak var destinationTextField: UITextField!
     
     //Google Map View Outlet
     @IBOutlet weak var mapView: GMSMapView!
     
     //Location Manager to get current location
-    let locationManager = CLLocationManager()
-    
-    //Building Model
-    struct Building {
-        let name : String
-        let address : String
-        let latitude : String
-        let longitude : String
-    }
+    var locationManager = CLLocationManager()
+    var currentLocation = CLLocation()
+    var route  = [Cooridnate]()
+   
+    //Flag for hamburger Menu
+    var hamburgerMenuIsVisible = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
+        //Set up the  location manager
+        locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestAlwaysAuthorization()
+        locationManager.distanceFilter = 50
+        locationManager.startUpdatingLocation()
+        locationManager.delegate = self
         
-        
-//        loadBuildings()
         //Gatech location
-        let gaTech = GMSCameraPosition.camera(withLatitude: 33.7756, longitude: -84.3963, zoom: 14)
+         let gaTechArea = GMSCameraPosition.camera(withLatitude: 33.7756, longitude: -84.3963, zoom: 14)
         //Set map to focus on gatech area
-        mapView.camera = gaTech
+        mapView.camera = gaTechArea
+        
+        
+        //NETWORKING JSON TEST
+        fetchPath()
+        
         
         //Add my current location button
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
         
-        let completion = {(result: NSString) in print(result)}
-        getPath(startLatitude: "33.7768361", startLongitude: "-84.3897006", endLatitude: "33.776995", endLongitude: "-84.397009", completionHandler: completion)
-        
-        print("********************************************")
-        print("********************************************")
-        print("********************************************")
-        print("COMPLETION")
-        print(completion)
-        print("********************************************")
-        print("********************************************")
-        print("********************************************")
     }
     
-    func loadBuildings() {
-        guard let url = URL(string: "https://m.gatech.edu/api/gtplaces/buildings") else {return}
-        
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if error != nil {
-                print("Error")
-            } else {
-                if let mydata = data {
-                    do {
-                        let myJson = try JSONSerialization.jsonObject(with: mydata) as! [String: Any]
-                        print(type(of: myJson))
-                    } catch {
-                        
-                    }
-                }
-            }
-        }
-        task.resume()
-    }
     
-    func getPath(startLatitude: String!, startLongitude: String!, endLatitude: String!, endLongitude: String!, completionHandler: @escaping (NSString) -> ()) {
-        let urlString = "http://jasongibson274.hopto.org:9003/pathing"
-        
-        let parameters = ["startLatitude": startLatitude, "startLongitude": startLongitude, "endLatitude": endLatitude, "endLongitude": endLongitude]
-        
-        let myUrl = URL(string: urlString)
-        
-        var request = URLRequest(url: myUrl!)
-        
-        request.httpMethod = "POST"
-        
-        let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
-        
-        request.httpBody = httpBody
-        
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        
-        let task = URLSession.shared.dataTask(with: request) { (data, response, eror) in
-            if let response = response {
-//                print(response)
-            }
+    //MARK: - Hamburger Menu
+    /***************************************************************/
+    @IBAction func hamburgerMenuButtonTapped(_ sender: Any) {
+        if !hamburgerMenuIsVisible{
+            mainViewLeadingConstraint.constant = 200
+            mainViewTrailingConstraint.constant = 200
             
-            if let data = data {
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    print(json)
-                    let responseString = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
-                    completionHandler(responseString!)
-                } catch {
-                    print(error)
-                }
+            hamburgerMenuIsVisible = true
+            mainView.isUserInteractionEnabled = false
+            
+        } else {
+            mainViewLeadingConstraint.constant = 0
+            mainViewTrailingConstraint.constant = 0
+            
+            hamburgerMenuIsVisible = false
+            mainView.isUserInteractionEnabled = true
+        }
+    }
+    
+    
+    
+    //MARK: - Networking
+    /***************************************************************/
+    
+    struct CustomPostEncoding: ParameterEncoding {
+        func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+            var urlRequest = try urlRequest.asURLRequest()
+            
+            let data = try JSONSerialization.data(withJSONObject: parameters!, options: [])
+            
+//            if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+//                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            }
+            
+            urlRequest.httpBody = data
+            
+            return urlRequest
+        }
+    }
+    
+    //Write the getWeatherData method here:
+    func fetchPath() {
+        let url : String = "http://jasongibson274.hopto.org:9003/pathing"
+        let params : [String : String] = ["startLatitude": "33.7768361", "startLongitude" : "-84.3897006", "endLatitude" : "33.776995", "endLongitude" : "-84.397009"]
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        ]
+        
+        Alamofire.request(url, method: .post, parameters: params, encoding: CustomPostEncoding(), headers: headers).responseJSON {
+            respose in
+            if respose.result.isSuccess {
+                
+                print("Alamofire succeded to get path data")
+                let pathJSON : JSON = JSON(respose.result.value!)
+                print("///////////////////")
+                print(pathJSON.count)
+
+                
+                self.getPath(json: pathJSON)
+                
+                
+            } else {
+                print("Error\(String(describing: respose.result.error))")
             }
         }
+    }
+    
+    
+    
+    //MARK: - JSON Parsing
+    /***************************************************************/
+    func getPath(json: JSON) {
+        //path = Array(count: json.count)
+        for(key,subJson):(String, JSON) in json {
+            if key != "orientation"{
+                route.append(Cooridnate(index: Double(key)! , longitude: subJson["longitude"].doubleValue, latitude: subJson["latitude"].doubleValue))
+            }
+            print(key)
+            //print(i, route[i].longitude, route[i].latitude)
+            //i = i + 1
+        }
+        print(route.count)
+    }
+    
+    //MARK: - Route Drawing
+    /***************************************************************/
+    @IBAction func drawPath(_ sender: Any) {
+        let path = GMSMutablePath()
         
-        task.resume()
+        let sortedRoute = route.sorted(by: { $0.index < $1.index })
         
+        
+        for coordinate in sortedRoute {
+            print(coordinate.index ,coordinate.latitude, coordinate.longitude)
+            path.add(CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude))
+        }
+        
+        let polyline = GMSPolyline(path: path)
+        polyline.strokeWidth = 2
+        polyline.geodesic = true
+        polyline.map = mapView
+    }
+    
+    
+    
+    
+    
+    //MARK: - UI Updates
+    /***************************************************************/
+    
+    
+    
+    
+    
+    
+    
+    //MARK: - Location Manager Delegate Methods
+    /***************************************************************/
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations[locations.count - 1]
+        if location.horizontalAccuracy > 0 {
+            locationManager.stopUpdatingLocation()
+            print("Longitude = \(location.coordinate.longitude), Latitude = \(location.coordinate.latitude)")
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+        //tell user there is an error in retriving location
+        //TODO: Location unavalable alert
     }
 
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -124,4 +205,3 @@ class MapViewController: UIViewController {
 
 
 }
-

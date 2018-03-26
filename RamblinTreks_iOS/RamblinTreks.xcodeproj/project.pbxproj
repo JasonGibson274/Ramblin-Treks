@@ -8,14 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		0DBDD9E37BEDA364B19A2EFC /* Pods_RamblinTreks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FD3FA07792A9E86E3F8180 /* Pods_RamblinTreks.framework */; };
+		4805B5ED203A21B300FED751 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4805B5EC203A21B300FED751 /* Route.swift */; };
 		488D558520182BEF001CD7E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D558420182BEF001CD7E6 /* AppDelegate.swift */; };
 		488D558720182BEF001CD7E6 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D558620182BEF001CD7E6 /* MapViewController.swift */; };
 		488D558A20182BEF001CD7E6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 488D558820182BEF001CD7E6 /* Main.storyboard */; };
 		488D558C20182BEF001CD7E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 488D558B20182BEF001CD7E6 /* Assets.xcassets */; };
 		488D558F20182BEF001CD7E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 488D558D20182BEF001CD7E6 /* LaunchScreen.storyboard */; };
+		48E52A6F204925C600606D8F /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E52A6E204925C500606D8F /* Coordinate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4805B5EC203A21B300FED751 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		488D558120182BEF001CD7E6 /* RamblinTreks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RamblinTreks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		488D558420182BEF001CD7E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		488D558620182BEF001CD7E6 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -23,6 +26,7 @@
 		488D558B20182BEF001CD7E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		488D558E20182BEF001CD7E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		488D559020182BEF001CD7E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		48E52A6E204925C500606D8F /* Coordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
 		97AE8B76C573599BBB12FEA3 /* Pods-RamblinTreks.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RamblinTreks.release.xcconfig"; path = "Pods/Target Support Files/Pods-RamblinTreks/Pods-RamblinTreks.release.xcconfig"; sourceTree = "<group>"; };
 		C4FD3FA07792A9E86E3F8180 /* Pods_RamblinTreks.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RamblinTreks.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6AECB1ECA1F628A0BBADF09 /* Pods-RamblinTreks.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RamblinTreks.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RamblinTreks/Pods-RamblinTreks.debug.xcconfig"; sourceTree = "<group>"; };
@@ -43,6 +47,8 @@
 		4805F11920183A030061F0ED /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4805B5EC203A21B300FED751 /* Route.swift */,
+				48E52A6E204925C500606D8F /* Coordinate.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -226,12 +232,16 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-RamblinTreks/Pods-RamblinTreks-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/SideMenu/SideMenu.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/TextFieldEffects/TextFieldEffects.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SideMenu.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TextFieldEffects.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -246,7 +256,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4805B5ED203A21B300FED751 /* Route.swift in Sources */,
 				488D558720182BEF001CD7E6 /* MapViewController.swift in Sources */,
+				48E52A6F204925C600606D8F /* Coordinate.swift in Sources */,
 				488D558520182BEF001CD7E6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
