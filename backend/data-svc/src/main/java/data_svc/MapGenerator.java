@@ -91,7 +91,7 @@ public class MapGenerator {
                         location2.getLatitude(), location2.getLongitude()) < SEPARATION_DIST
                         && !location1.getId().equals(location2.getId())) {
                     result.computeIfAbsent(location1, k -> new ArrayList<>());
-                    result.get(location1).add(location2.getUuid());
+                    result.get(location1).add(location2.getId());
                 }
             }
         }
@@ -128,8 +128,6 @@ public class MapGenerator {
             BusRoute busRoute = busRouteRepository.findOne(current.getBusRoute());
             locationJson.put("color", busRoute.getRouteColor());
             locationJson.put("name", current.getStopName());
-            locationJson.put("uuid", current.getUuid());
-            locationJson.put("route", busRoute.getRouteName());
             JSONArray neighbors = new JSONArray();
             for(UUID uuid : busGraph.get(current)) {
                 neighbors.put(uuid);

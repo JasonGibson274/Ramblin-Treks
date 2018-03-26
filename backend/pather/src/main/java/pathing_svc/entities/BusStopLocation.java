@@ -12,9 +12,6 @@ import java.util.UUID;
 public class BusStopLocation extends SearchLocation {
 
     @NotNull
-    private Long longId;
-
-    @NotNull
     @Size(min = 1)
     private String color;
 
@@ -23,30 +20,24 @@ public class BusStopLocation extends SearchLocation {
     private String name;
 
     @ElementCollection
-    private Set<Long> busNeighbors;
+    private Set<UUID> busNeighbors;
 
     @NotNull
     @Size(min = 1)
     private String route;
 
+    @ElementCollection
+    private List<Long> arrivalTimes;
+
     public BusStopLocation() {
     }
 
-    public BusStopLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors, Long longId, String color, String name, Set<Long> busNeighbors, String route) {
+    public BusStopLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors, String color, String name, Set<UUID> busNeighbors, String route) {
         super(id, latitude, longitude, neighbors);
-        this.longId = longId;
         this.color = color;
         this.name = name;
         this.busNeighbors = busNeighbors;
         this.route = route;
-    }
-
-    public Long getLongId() {
-        return longId;
-    }
-
-    public void setLongId(Long longId) {
-        this.longId = longId;
     }
 
     public String getColor() {
@@ -65,11 +56,11 @@ public class BusStopLocation extends SearchLocation {
         this.name = name;
     }
 
-    public Set<Long> getBusNeighbors() {
+    public Set<UUID> getBusNeighbors() {
         return busNeighbors;
     }
 
-    public void setBusNeighbors(Set<Long> busNeighbors) {
+    public void setBusNeighbors(Set<UUID> busNeighbors) {
         this.busNeighbors = busNeighbors;
     }
 
@@ -79,5 +70,13 @@ public class BusStopLocation extends SearchLocation {
 
     public void setRoute(String route) {
         this.route = route;
+    }
+
+    public List<Long> getArrivalTimes() {
+        return arrivalTimes;
+    }
+
+    public void setArrivalTimes(List<Long> arrivalTimes) {
+        this.arrivalTimes = arrivalTimes;
     }
 }

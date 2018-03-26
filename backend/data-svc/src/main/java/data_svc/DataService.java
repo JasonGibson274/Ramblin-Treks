@@ -33,8 +33,7 @@ public class DataService {
 
     @PostConstruct
     public void setUpScheduler() {
-        GtBusesApiCalls.getRoutes(restTemplate, busRouteRepository);
-        GtBusesApiCalls.getStops(restTemplate, busStopRepository, busRouteRepository);
+        GtBusesApiCalls.getStopsAndRoutes(restTemplate, busRouteRepository, busStopRepository);
         //ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         //System.out.println("scheduler set up");
         //System.out.println(busStopRepository.count());

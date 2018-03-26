@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface BusStopLocationRepository extends CrudRepository<BusStopLocation, UUID> {
     List<BusStopLocation> findAllByRoute(String route);
-    BusStopLocation findByLongId(Long id);
+    BusStopLocation findByName(String name);
 }

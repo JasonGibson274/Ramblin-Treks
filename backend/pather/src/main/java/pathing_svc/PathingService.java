@@ -55,9 +55,9 @@ public class PathingService {
 
     private void pullGraphIfAbsent(boolean force) {
         if(searchLocationRepository.count() == 0 || force) {
-            ResponseEntity<String> response = restTemplate.getForEntity(
-                    "http://jasongibson274.hopto.org:9001/data/simplified/path",
-                    String.class);
+            String url = "http://jasongibson274.hopto.org:9001/data/simplified/path";
+            //String url = "http://localhost:9001/data/simplified/path";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
             if (HttpStatus.OK == response.getStatusCode()) {
                 JSONObject object = new JSONObject(response);
@@ -80,10 +80,9 @@ public class PathingService {
                         BusStopLocation newLocation = new BusStopLocation();
                         newLocation.setLatitude(current.getDouble("latitude"));
                         newLocation.setLongitude(current.getDouble("longitude"));
-                        newLocation.setId(UUID.fromString(current.getString("uuid")));
+                        newLocation.setId(UUID.fromString(current.getString("id")));
                         newLocation.setColor(current.getString("color"));
                         newLocation.setName(current.getString("name"));
-                        newLocation.setLongId(current.getLong("id"));
                         newLocation.setRoute(current.getString("route"));
                         JSONArray neighbors = current.getJSONArray("neighbors");
                         HashSet<UUID> neighborList = new HashSet<>();
@@ -92,9 +91,9 @@ public class PathingService {
                         }
                         newLocation.setNeighbors(neighborList);
                         JSONArray busNeighbors = current.getJSONArray("busNeighbors");
-                        HashSet<Long> busNeighborsList = new HashSet<>();
+                        HashSet<UUID> busNeighborsList = new HashSet<>();
                         for(int j = 0; j < busNeighbors.length(); j++) {
-                            busNeighborsList.add(busNeighbors.getLong(j));
+                            busNeighborsList.add(UUID.fromString(busNeighbors.getString(j)));
                         }
                         newLocation.setBusNeighbors(busNeighborsList);
                         busStopLocationRepository.save(newLocation);

@@ -89,8 +89,8 @@ public class GraphSearchTest {
     @Test
     public void testSearch1WithBuses() {
 
-        BusStopLocation b = new BusStopLocation(UUID.randomUUID(), 0.0, 0.1, null, 1L, "color", "name", null, "red");
-        BusStopLocation a = new BusStopLocation(UUID.randomUUID(), 100.0, 99.0, null, 1L, "color", "name", null, "red");
+        BusStopLocation b = new BusStopLocation(UUID.randomUUID(), 0.0, 0.1, null, "color", "name", null, "red");
+        BusStopLocation a = new BusStopLocation(UUID.randomUUID(), 100.0, 99.0, null,  "color", "name", null, "red");
 
         Set<UUID> locations = new HashSet<>();
         locations.add(start.getId());
@@ -102,9 +102,9 @@ public class GraphSearchTest {
         locations.add(a.getId());
         start.setNeighbors(locations);
 
-        Set<Long> busNeighbors = new HashSet<>();
-        busNeighbors.add(a.getLongId());
-        busNeighbors.add(b.getLongId());
+        Set<UUID> busNeighbors = new HashSet<>();
+        busNeighbors.add(a.getId());
+        busNeighbors.add(b.getId());
         a.setBusNeighbors(busNeighbors);
         b.setBusNeighbors(busNeighbors);
 

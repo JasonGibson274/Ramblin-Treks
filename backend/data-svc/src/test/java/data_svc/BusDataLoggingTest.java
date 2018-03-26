@@ -1,31 +1,19 @@
 package data_svc;
 
 import data_svc.entities.*;
-import jdk.nashorn.api.scripting.JSObject;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.isNotNull;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -59,10 +47,10 @@ public class BusDataLoggingTest {
         busRoute = new BusRoute("trolley", "route Name", "#ffffff");
         testEntityManager.merge(busRoute);
         //Long id, String stopName, double latitude, double longitude, String direction
-        BusStop busStop = new BusStop(1L, "stop 1", 1.0, 1.0, "dir");
+        BusStop busStop = new BusStop("stop 1", 1.0, 1.0);
         busStop.setBusRoute("trolley");
         testEntityManager.merge(busStop);
-        busStop = new BusStop(2L, "stop 2", 2.0, 2.0, "dir");
+        busStop = new BusStop("stop 2", 2.0, 2.0);
         busStop.setBusRoute("trolley");
         testEntityManager.merge(busStop);
     }
@@ -76,7 +64,7 @@ public class BusDataLoggingTest {
                 "<keyForNextTime value=\"1859447479423\" />\n" +
                 "<config iOSVersion=\"3.0.7\" party=\"false\" message=\"\" />\n" +
                 "</body>";
-        GtBusesApiCalls.parseResponse(body, busRouteRepository, busPositionRepository, busStopRepository);
+        GtBusesApiCalls.parseResponseBusPosition(body, busRouteRepository, busPositionRepository, busStopRepository);
 
         assertThat(busPositionRepository.count(), is(1L));
         BusPosition busPosition = busPositionRepository.findAll().get(0);
@@ -98,7 +86,7 @@ public class BusDataLoggingTest {
                 "<keyForNextTime value=\"1859447479423\" />\n" +
                 "<config iOSVersion=\"3.0.7\" party=\"false\" message=\"\" />\n" +
                 "</body>";
-        GtBusesApiCalls.parseResponse(body, busRouteRepository, busPositionRepository, busStopRepository);
+        GtBusesApiCalls.parseResponseBusPosition(body, busRouteRepository, busPositionRepository, busStopRepository);
 
         assertThat(busPositionRepository.count(), is(2L));
     }

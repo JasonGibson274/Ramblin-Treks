@@ -18,21 +18,15 @@ public class BusRoute {
     @Id
     private String id;
 
-    @NotNull
-    @Size(min = 1)
-    private String routeName;
 
     @NotNull
     @Size(min = 1)
     private String routeColor;
 
-    private String keyForNextTime;
-
     public BusRoute() {}
 
     public BusRoute(String id, String routeName, String routeColor) {
         this.id = id;
-        this.routeName = routeName;
         this.routeColor = routeColor;
     }
 
@@ -44,28 +38,12 @@ public class BusRoute {
         this.id = id;
     }
 
-    public String getRouteName() {
-        return routeName;
-    }
-
-    public void setRouteName(String routeName) {
-        this.routeName = routeName;
-    }
-
     public String getRouteColor() {
         return routeColor;
     }
 
     public void setRouteColor(String routeColor) {
         this.routeColor = routeColor;
-    }
-
-    public String getKeyForNextTime() {
-        return keyForNextTime;
-    }
-
-    public void setKeyForNextTime(String keyForNextTime) {
-        this.keyForNextTime = keyForNextTime;
     }
 
     @Override

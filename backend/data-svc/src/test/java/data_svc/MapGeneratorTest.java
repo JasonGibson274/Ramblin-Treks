@@ -101,12 +101,6 @@ public class MapGeneratorTest {
         assertThat(result.keySet().size(), is(0));
     }
 
-    @Test
-    public void test() {
-        assertThat(true, is(true));
-    }
-
-
 
 
 }

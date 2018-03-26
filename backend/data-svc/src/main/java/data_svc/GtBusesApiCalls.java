@@ -1,16 +1,12 @@
 package data_svc;
 
 import data_svc.entities.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import trek_utils.TrekUtils;
 
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 public class GtBusesApiCalls {
 
@@ -25,13 +21,13 @@ public class GtBusesApiCalls {
 
         if (HttpStatus.OK == response.getStatusCode()) {
             JSONObject object = new JSONObject(response);
-            parseResponse(object.getString("body"), busRouteRepository, busPositionRepository, busStopRepository);
+            parseResponseBusPosition(object.getString("body"), busRouteRepository, busPositionRepository, busStopRepository);
             return true;
         }
         return false;
     }
 
-    static void parseResponse(String body, BusRouteRepository busRouteRepository, BusPositionRepository busPositionRepository, BusStopRepository busStopRepository) {
+    static void parseResponseBusPosition(String body, BusRouteRepository busRouteRepository, BusPositionRepository busPositionRepository, BusStopRepository busStopRepository) {
         String[] lines = body.split("\n");
         for(String line : lines) {
             if(line.contains("vehicle")) {
@@ -72,57 +68,47 @@ public class GtBusesApiCalls {
         return line.substring(line.indexOf(value) + value.length() + 2, line.indexOf("\"", line.indexOf(value) + value.length() + 2));
     }
 
-    public static boolean getRoutes(RestTemplate restTemplate, BusRouteRepository busRouteRepository) {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://m.gatech.edu:80/api/buses/route",
-                String.class);
+    public static boolean getStopsAndRoutes(RestTemplate restTemplate, BusRouteRepository busRouteRepository,
+                                            BusStopRepository busStopRepository) {
+
+        String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/routes";
+
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
         if(response == null) {
             return false;
         }
 
         if (HttpStatus.OK == response.getStatusCode()) {
-
             JSONObject object = new JSONObject(response);
-            JSONArray body = new JSONArray(object.getString("body"));
-            for(int i = 0; i < body.length(); i++) {
-                BusRoute busRoute = new BusRoute();
-                busRoute.setId(body.getJSONObject(i).getString("route_id"));
-                busRoute.setRouteName(body.getJSONObject(i).getString("route_actual_name"));
-                busRoute.setRouteColor(body.getJSONObject(i).getString("route_color"));
-                //busRoute.setKeyForNextTime(body.getJSONObject(i).getString("keyForNextTime"));
-                busRouteRepository.save(busRoute);
-            }
+            parseResponseRouteAndStop(object.getString("body"), busRouteRepository, busRouteRepository, busStopRepository);
             return true;
         }
         return false;
+
     }
 
-    public static boolean getStops(RestTemplate restTemplate, BusStopRepository busStopRepository, BusRouteRepository busRouteRepository) {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "http://m.gatech.edu:80/api/buses/stop",
-                String.class);
-
-        if(response == null) {
-            return false;
-        }
-
-        if (HttpStatus.OK == response.getStatusCode()) {
-
-            JSONObject object = new JSONObject(response);
-            JSONArray body = new JSONArray(object.getString("body"));
-            for(int i = 0; i < body.length(); i++) {
+    public static void parseResponseRouteAndStop(String body, BusRouteRepository busRouteRepository,
+                                                 BusRouteRepository routeRepository, BusStopRepository busStopRepository) {
+        String[] lines = body.split("\n");
+        String busRoute = null;
+        for(String line : lines) {
+            if(line.contains("route tag=")) {
+                BusRoute busRouteObject = new BusRoute();
+                busRoute = getString("tag", line);
+                busRouteObject.setRouteColor(getString("color", line));
+                busRouteObject.setId(busRoute);
+                busRouteRepository.save(busRouteObject);
+            } else if(line.contains("stop tag=") && line.contains("title=")) {
                 BusStop busStop = new BusStop();
-                String routeId = body.getJSONObject(i).getString("route_id");
-                busStop.setBusRoute(routeId);
-                busStop.setId(Long.valueOf(body.getJSONObject(i).getString("reference_stop_id")));
-                busStop.setStopName(body.getJSONObject(i).getString("stop_name"));
-                busStop.setDirection(body.getJSONObject(i).getString("trip_id"));
-                busStop.setLatitude(Double.parseDouble(body.getJSONObject(i).getString("stop_lat")));
-                busStop.setLongitude(Double.parseDouble(body.getJSONObject(i).getString("stop_lon")));
+                busStop.setBusRoute(busRoute);
+                busStop.setStopName(getString("tag", line));
+                busStop.setLatitude(Double.parseDouble(getString("lat", line)));
+                busStop.setLongitude(Double.parseDouble(getString("lon", line)));
                 busStopRepository.save(busStop);
             }
-            return true;
         }
-        return false;
     }
+
+
 }

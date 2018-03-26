@@ -100,8 +100,8 @@ public class StateComparatorTest {
         path.add(new SearchLocation(UUID.randomUUID(), 0.0, 1.0, null));
         path.add(new SearchLocation(UUID.randomUUID(), 0.0, 2.0, null));
         //UUID id, double latitude, double longitude, Set<UUID> neighbors, Long longId, String color, String name, Set<Long> busNeighbors, String route
-        path.add(new BusStopLocation(UUID.randomUUID(), 0.0, 3.0, null, 1L, "color", "name", null, "red"));
-        path.add(new BusStopLocation(UUID.randomUUID(), 0.0, 100.0, null, 1L, "color", "name", null, "red"));
+        path.add(new BusStopLocation(UUID.randomUUID(), 0.0, 3.0, null, "color", "name", null, "red"));
+        path.add(new BusStopLocation(UUID.randomUUID(), 0.0, 100.0, null, "color", "name", null, "red"));
         path.add(new SearchLocation(UUID.randomUUID(), 0.0, 101.0, null));
         path.add(new SearchLocation(UUID.randomUUID(), 0.0, 102.0, null));
 

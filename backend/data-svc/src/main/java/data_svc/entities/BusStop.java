@@ -11,7 +11,8 @@ import java.util.UUID;
 public class BusStop {
     @NotNull
     @Id
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     @NotNull
     @Size(min = 1)
@@ -25,35 +26,21 @@ public class BusStop {
 
     @NotNull
     @Size(min = 1)
-    private String direction;
-
-    @NotNull
-    @Size(min = 1)
     private String busRoute;
-
-    @NotNull
-    private UUID uuid;
 
     public BusStop() {}
 
-    public BusStop(Long id, String stopName, double latitude, double longitude, String direction) {
-        this.id = id;
+    public BusStop(String stopName, double latitude, double longitude) {
         this.stopName = stopName;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.direction = direction;
     }
 
-    @PrePersist
-    public void setUp() {
-        this.uuid = UUID.randomUUID();
-    }
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -81,27 +68,11 @@ public class BusStop {
         this.longitude = longitude;
     }
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
     public String getBusRoute() {
         return busRoute;
     }
 
     public void setBusRoute(String busRoute) {
         this.busRoute = busRoute;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 }
