@@ -112,7 +112,7 @@ public class PathingService {
             node.put("longitude", path.get(i).getLongitude());
             if(path.get(i) instanceof BusStopLocation) {
                 BusStopLocation busStopLocation = (BusStopLocation) path.get(i);
-                node.put("color", busStopLocation.getColor());
+                node.put("color", "#" + busStopLocation.getColor());
             } else {
                 node.put("color", "#ff00ff");
             }
