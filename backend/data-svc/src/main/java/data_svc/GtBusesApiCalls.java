@@ -26,16 +26,15 @@ public class GtBusesApiCalls {
 
         if (HttpStatus.OK == response.getStatusCode()) {
             JSONObject object = new JSONObject(response);
-            parseResponseRouteAndStop(object.getString("body"), busRouteRepository, busRouteRepository, busStopRepository);
+            parseResponseRouteAndStop(object.getString("body"), busRouteRepository, busStopRepository);
             return true;
         }
         return false;
 
     }
 
-    public static void parseResponseRouteAndStop(String body, BusRouteRepository busRouteRepository,
-                                                 BusRouteRepository routeRepository, BusStopRepository busStopRepository) {
-        String[] lines = body.split("\n");
+    private static void parseResponseRouteAndStop(String body, BusRouteRepository busRouteRepository, BusStopRepository busStopRepository) {
+        String[] lines = body.split(">");
         String busRoute = null;
         for(String line : lines) {
             if(line.contains("route tag=")) {

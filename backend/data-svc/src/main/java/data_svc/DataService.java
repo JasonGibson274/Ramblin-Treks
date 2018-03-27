@@ -28,7 +28,7 @@ public class DataService {
     private final RestTemplate restTemplate;
 
     @PostConstruct
-    public void setUpScheduler() {
+    public void setUp() {
         GtBusesApiCalls.getStopsAndRoutes(restTemplate, busRouteRepository, busStopRepository);
     }
 

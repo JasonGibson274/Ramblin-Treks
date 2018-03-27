@@ -34,11 +34,10 @@ public class MapGenerator {
         List<PathLocation> reduced = voxelGrid(pathLocations);
         Map<PathLocation, List<UUID>> graph = findNeighbors(reduced, busStops);
         Map<BusStop, List<UUID>> busGraph = findNeighborsBuses(graph, busStops);
-        //Map<UUID, List<PathLocation>> graphSimplified = simplifyMap(graph);
         return serializeMap(graph, busGraph, busStopRepository, busRouteRepository);
     }
 
-    Map<BusStop, List<UUID>> findNeighborsBuses(Map<PathLocation, List<UUID>> graph, List<BusStop> busStops) {
+    private Map<BusStop, List<UUID>> findNeighborsBuses(Map<PathLocation, List<UUID>> graph, List<BusStop> busStops) {
         Map<BusStop, List<UUID>> result = new HashMap<>();
         for(BusStop busStop : busStops) {
             for(PathLocation pathLocation : graph.keySet()) {
@@ -97,11 +96,6 @@ public class MapGenerator {
         return result;
     }
 
-    Map<UUID, List<PathLocation>> simplifyMap(Map<UUID, List<PathLocation>> graph) {
-        Map<UUID, List<PathLocation>> result;
-        return graph;
-    }
-
     String serializeMap(Map<PathLocation, List<UUID>> graph, Map<BusStop, List<UUID>> busGraph, BusStopRepository busStopRepository,
                         BusRouteRepository busRouteRepository) {
         JSONArray result = new JSONArray();
@@ -132,6 +126,7 @@ public class MapGenerator {
                 neighbors.put(uuid);
             }
             locationJson.put("neighbors", neighbors);
+            result.put(locationJson);
         }
         return result.toString();
     }
