@@ -118,6 +118,7 @@ public class MapGenerator {
             locationJson.put("latitude", current.getLatitude());
             locationJson.put("longitude", current.getLongitude());
             locationJson.put("id", current.getId());
+            locationJson.put("route", current.getBusRoute());
             BusRoute busRoute = busRouteRepository.findOne(current.getBusRoute());
             locationJson.put("color", busRoute.getRouteColor());
             locationJson.put("name", current.getStopName());
