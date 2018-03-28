@@ -17,23 +17,30 @@ public class GraphSearch {
         this.goal = goal;
     }
 
-    List<SearchLocation> aStar(SearchLocationRepository searchLocationRepository, BusStopLocationRepository busStopLocationRepository) {
+    Path aStar(SearchLocationRepository searchLocationRepository, BusStopLocationRepository busStopLocationRepository) {
         StateComparator comparator = new StateComparator(goal);
-        PriorityQueue<List<SearchLocation>> frontier = new PriorityQueue<>(Math.toIntExact(searchLocationRepository.count()), comparator);
-        Set<SearchLocation> expanded = new HashSet<>(Math.toIntExact(searchLocationRepository.count()));
-        frontier.add(Collections.singletonList(start));
+        PriorityQueue<Path> frontier = new PriorityQueue<>(Math.toIntExact(searchLocationRepository.count()), comparator);
+        Set<SearchLocation> expanded = new HashSet<>(Math.toIntExact(searchLocationRepository.count()) + Math.toIntExact(busStopLocationRepository.count()));
+        Path path = new Path();
+        path.setLocations(Collections.singletonList(start));
+        frontier.add(path);
         while(!frontier.isEmpty()) {
-            List<SearchLocation> current = frontier.poll();
-            if(isGoal(current.get(current.size() - 1), goal)) {
+            Path current = frontier.poll();
+            SearchLocation last = path.getLocations().get(path.getLocations().size() - 1);
+            if(isGoal(last, goal)) {
                 return current;
             }
-            if(!expanded.contains(current.get(current.size() - 1))) {
-                expanded.add(current.get(current.size() - 1));
-                for(SearchLocation location : generateSuccessors(current.get(current.size() - 1), searchLocationRepository,
-                        busStopLocationRepository, comparator.getPathCost(current))) {
-                    List<SearchLocation> temp = new ArrayList<>(current);
+            if(!expanded.contains(last)) {
+                expanded.add(last);
+                for(SearchLocation location : generateSuccessors(last, searchLocationRepository,
+                        busStopLocationRepository, path)) {
+                    Path tempPath = new Path();
+                    List<SearchLocation> temp = new ArrayList<>(path.getLocations());
                     temp.add(location);
-                    frontier.add(temp);
+                    tempPath.setLocations(temp);
+                    tempPath.setCost(comparator.getDistanceCost(current, location));
+                    tempPath.setHeuristic(comparator.getHeuristicCost(location));
+                    frontier.add(tempPath);
                 }
             }
         }
@@ -41,7 +48,7 @@ public class GraphSearch {
     }
 
     Set<SearchLocation> generateSuccessors(SearchLocation location, SearchLocationRepository searchLocationRepository,
-                                           BusStopLocationRepository busStopLocationRepository, double cost) {
+                                           BusStopLocationRepository busStopLocationRepository, Path path) {
         Set<SearchLocation> result = new HashSet<>();
         for(UUID neighborId : location.getNeighbors()) {
             if(searchLocationRepository.findOne(neighborId) != null) {

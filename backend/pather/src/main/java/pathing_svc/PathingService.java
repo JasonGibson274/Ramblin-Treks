@@ -12,6 +12,7 @@ import trek_utils.TrekUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.rowset.serial.SerialArray;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -25,6 +26,7 @@ public class PathingService {
     private final SearchLocationRepository searchLocationRepository;
     private final RestTemplate restTemplate;
     private final BusStopLocationRepository busStopLocationRepository;
+    private UpdateBusEstimates busEstimates;
 
     @Autowired
     public PathingService(PathingRequestRepository pathingRequestRepository, SearchLocationRepository searchLocationRepository,
@@ -40,16 +42,18 @@ public class PathingService {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.MINUTES);
         //pullGraphIfAbsent(true);
-        scheduler.scheduleAtFixedRate(new UpdateBusEstimates(restTemplate, busStopLocationRepository), 10, 10, TimeUnit.SECONDS);
+        busEstimates = new UpdateBusEstimates(restTemplate, busStopLocationRepository);
+        scheduler.scheduleAtFixedRate(busEstimates, 10, 10, TimeUnit.SECONDS);
         System.out.println("scheduler set up");
     }
 
     String getPath(UUID id, JSONObject request) {
         pullGraphIfAbsent(false);
+        busEstimates.update();
         PathingRequest pathingRequest = findOrCreate(id, request);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
-        List<SearchLocation> path = search.aStar(searchLocationRepository, busStopLocationRepository);
+        Path path = search.aStar(searchLocationRepository, busStopLocationRepository);
         return serializePath(path);
     }
 
@@ -96,7 +100,8 @@ public class PathingService {
         }
     }
 
-    private String serializePath(List<SearchLocation> path) {
+    private String serializePath(Path pathObject) {
+        List<SearchLocation> path = pathObject.getLocations();
         JSONObject jsonObject = new JSONObject();
 
         for(int i = 0; i < path.size(); i++) {
@@ -113,6 +118,7 @@ public class PathingService {
         }
         jsonObject.put("orientation", TrekUtils.getBearing(path.get(0).getLatitude(), path.get(0).getLongitude(),
                 path.get(path.size() - 1).getLatitude(), path.get(path.size() - 1).getLongitude()));
+        jsonObject.put("estimate", pathObject.getCost());
         return jsonObject.toString();
     }
 
@@ -166,9 +172,9 @@ public class PathingService {
         pathingRequest.setEndLongitude(endLon);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
-        List<SearchLocation> path = search.aStar(searchLocationRepository, busStopLocationRepository);
+        Path path = search.aStar(searchLocationRepository, busStopLocationRepository);
         try {
-            TrekUtils.createCsv(response, new ArrayList<>(path));
+            TrekUtils.createCsv(response, new ArrayList<>(path.getLocations()));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -23,6 +23,11 @@ public class SearchLocation {
 
     public SearchLocation() {}
 
+    public SearchLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public SearchLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors) {
         this.id = id;
         this.latitude = latitude;

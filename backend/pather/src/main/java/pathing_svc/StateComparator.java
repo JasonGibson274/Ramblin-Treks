@@ -4,10 +4,9 @@ import pathing_svc.entities.BusStopLocation;
 import pathing_svc.entities.SearchLocation;
 import trek_utils.TrekUtils;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
-public class StateComparator implements Comparator<List<SearchLocation>> {
+public class StateComparator implements Comparator<Path> {
 
     private final double walkingSpeed = 1.4; //in m/s
 
@@ -18,28 +17,50 @@ public class StateComparator implements Comparator<List<SearchLocation>> {
     }
 
     @Override
-    public int compare(List<SearchLocation> locs1, List<SearchLocation> locs2) {
-        return Double.compare(getPathCost(locs1), getPathCost(locs2));
+    public int compare(Path path1, Path path2) {
+        return Double.compare(path1.getCost() + path1.getHeuristic(), path2.getCost() + path2.getHeuristic());
     }
 
-    double getPathCost(List<SearchLocation> list) {
-        double result = 0;
-        if(list.size() == 0) {
-            return 0;
-        }
-        for(int i = 0; i < list.size() - 1; i++) {
-            if(list.get(i) instanceof BusStopLocation && list.get(i + 1) instanceof BusStopLocation) {
-                result += 5;
-            } else {
-                result += TrekUtils.getDistanceInMetersHaversine(list.get(i).getLatitude(), list.get(i).getLongitude(),
-                        list.get(i + 1).getLatitude(), list.get(i + 1).getLongitude()) / walkingSpeed;
+    double getDistanceCost(Path path, SearchLocation searchLocation) {
+        if(searchLocation != null) {
+            double result = 0;
+            SearchLocation start = path.getLocations().get(path.getLocations().size() - 1);
+            boolean success = false;
+            if(searchLocation instanceof BusStopLocation && start instanceof BusStopLocation) {
+                BusStopLocation busStopLocation = (BusStopLocation) searchLocation;
+                BusStopLocation startBus = (BusStopLocation) start;
+                List<Long> sorted = startBus.getArrivalTimes();
+                Collections.sort(sorted);
+
+                for(Long arrivalTime : sorted) {
+                    if(arrivalTime > path.getCost()) {
+                        result += arrivalTime;
+                        break;
+                    }
+                }
+                if(result > 0) {
+                    sorted = busStopLocation.getArrivalTimes();
+                    Collections.sort(sorted);
+                    for(Long arrivalTime : sorted) {
+                        if(arrivalTime > result) {
+                            result = arrivalTime;
+                            success = true;
+                            break;
+                        }
+                    }
+                }
             }
+            if(!success) {
+                result += path.getCost();
+                result += TrekUtils.getDistanceInMetersHaversine(start.getLatitude(), start.getLongitude(),
+                        searchLocation.getLatitude(), searchLocation.getLongitude()) / walkingSpeed;
+            }
+            return result;
         }
-        result += getHeuristicCost(list.get(list.size() - 1))/ walkingSpeed;
-        return result;
+        return 0;
     }
 
     double getHeuristicCost(SearchLocation location) {
-        return TrekUtils.getDistanceInMetersHaversine(location.getLatitude(), location.getLongitude(), goal.getLatitude(), goal.getLongitude());
+        return TrekUtils.getDistanceInMetersHaversine(location.getLatitude(), location.getLongitude(), goal.getLatitude(), goal.getLongitude()) / walkingSpeed;
     }
 }

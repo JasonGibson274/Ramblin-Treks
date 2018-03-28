@@ -14,6 +14,7 @@ public class UpdateBusEstimates implements Runnable {
 
     private final RestTemplate restTemplate;
     private final BusStopLocationRepository busStopLocationRepository;
+    private boolean updateVal = true;
 
     public UpdateBusEstimates(RestTemplate restTemplate, BusStopLocationRepository busStopLocationRepository) {
         this.restTemplate = restTemplate;
@@ -22,33 +23,43 @@ public class UpdateBusEstimates implements Runnable {
 
     @Override
     public void run() {
-        int stop = 0;
-        List<BusStopLocation> stops = busStopLocationRepository.findAllByOrderByRoute();
-        String route = stops.get(0).getRoute();
-        do {
-            String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/multiPredictions?stops=";
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(url);
-            boolean first = true;
-            for (;stop < stops.size() && stringBuilder.length() < 4000 && stops.get(stop).getRoute().equals(route); stop++) {
-                stringBuilder.append(first ? "" : "&stops=");
-                stringBuilder.append(stops.get(stop).getRoute());
-                stringBuilder.append("|");
-                stringBuilder.append(stops.get(stop).getName());
-                first = false;
-            }
+        updateVal = true;
+    }
 
-            System.out.println(stringBuilder.toString());
-            ResponseEntity<String> response = restTemplate.getForEntity(stringBuilder.toString(), String.class);
+    public void update() {
+        if(updateVal) {
+            int stop = 0;
+            List<BusStopLocation> stops = busStopLocationRepository.findAllByOrderByRoute();
+            String route = stops.get(0).getRoute();
+            do {
+                String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/multiPredictions?stops=";
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(url);
+                boolean first = true;
+                for (;stop < stops.size() && stringBuilder.length() < 4000 && stops.get(stop).getRoute().equals(route); stop++) {
+                    stringBuilder.append(first ? "" : "&stops=");
+                    stringBuilder.append(stops.get(stop).getRoute());
+                    stringBuilder.append("|");
+                    stringBuilder.append(stops.get(stop).getName());
+                    first = false;
+                }
 
-            if (response == null) {
-                return;
-            } else if (HttpStatus.OK == response.getStatusCode()) {
-                JSONObject object = new JSONObject(response);
-                parseResponse(object.getString("body"), route);
-            }
-            route = stops.get(stop).getRoute();
-        } while(stop != stops.size());
+                System.out.println(stringBuilder.toString());
+                ResponseEntity<String> response = restTemplate.getForEntity(stringBuilder.toString(), String.class);
+
+                if (response == null) {
+                    return;
+                } else if (HttpStatus.OK == response.getStatusCode()) {
+                    JSONObject object = new JSONObject(response);
+                    parseResponse(object.getString("body"), route);
+                }
+                if(stops.size() > stop) {
+                    route = stops.get(stop).getRoute();
+                }
+
+            } while(stop != stops.size());
+        }
+        updateVal = false;
     }
 
     private void parseResponse(String input, String route) {

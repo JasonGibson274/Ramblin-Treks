@@ -27,7 +27,10 @@ public class BusStopLocation extends SearchLocation {
     @ElementCollection
     private List<Long> arrivalTimes;
 
-    public BusStopLocation() {
+    public BusStopLocation() {}
+
+    public BusStopLocation(UUID uuid, double v, double v1, Set<UUID> o) {
+        super(uuid, v, v1, o);
     }
 
     public BusStopLocation(UUID id, double latitude, double longitude, Set<UUID> neighbors, String color,
