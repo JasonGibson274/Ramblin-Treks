@@ -26,6 +26,7 @@ public class PathingService {
     private final RestTemplate restTemplate;
     private final BusStopLocationRepository busStopLocationRepository;
 
+    @Autowired
     public PathingService(PathingRequestRepository pathingRequestRepository, SearchLocationRepository searchLocationRepository,
                           RestTemplate restTemplate, BusStopLocationRepository busStopLocationRepository) {
         this.pathingRequestRepository = pathingRequestRepository;
@@ -34,14 +35,13 @@ public class PathingService {
         this.busStopLocationRepository = busStopLocationRepository;
     }
 
-    @Autowired
-
-
     @PostConstruct
     public void setUpScheduler() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        System.out.println("scheduler set up");
         scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.MINUTES);
+        //pullGraphIfAbsent(true);
+        scheduler.scheduleAtFixedRate(new UpdateBusEstimates(restTemplate, busStopLocationRepository), 10, 10, TimeUnit.SECONDS);
+        System.out.println("scheduler set up");
     }
 
     String getPath(UUID id, JSONObject request) {
@@ -181,10 +181,13 @@ public class PathingService {
         searchLocationRepository.deleteAll();
         pathingRequestRepository.deleteAll();
         pullGraphIfAbsent(true);
-        System.out.println("I have " + searchLocationRepository.count() + " points");
     }
 
     public List<SearchLocation> getAllSearchLocations() {
         return searchLocationRepository.findAll();
+    }
+
+    public List<BusStopLocation> getAllBusStopLocations() {
+        return busStopLocationRepository.findAll();
     }
 }

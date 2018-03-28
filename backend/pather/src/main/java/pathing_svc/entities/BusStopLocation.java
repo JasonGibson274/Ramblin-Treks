@@ -1,7 +1,6 @@
 package pathing_svc.entities;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -17,10 +16,12 @@ public class BusStopLocation extends SearchLocation {
 
     @NotNull
     @Size(min = 1)
+    @Column(name = "name")
     private String name;
 
     @NotNull
     @Size(min = 1)
+    @Column(name = "route")
     private String route;
 
     @ElementCollection

@@ -5,6 +5,7 @@ package pathing_svc;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pathing_svc.entities.BusStopLocation;
 import pathing_svc.entities.SearchLocation;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,5 +41,10 @@ public class PathingController {
     @RequestMapping(method = RequestMethod.GET, value = "getAllLocations")
     public List<SearchLocation> getAllSearchLocations() {
         return pathingService.getAllSearchLocations();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getBusLocations")
+    public List<BusStopLocation> getAllBusStopLocations() {
+        return pathingService.getAllBusStopLocations();
     }
 }

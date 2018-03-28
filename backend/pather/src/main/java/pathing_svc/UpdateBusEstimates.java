@@ -8,6 +8,7 @@ import pathing_svc.entities.BusStopLocation;
 import pathing_svc.entities.BusStopLocationRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateBusEstimates implements Runnable {
 
@@ -21,41 +22,53 @@ public class UpdateBusEstimates implements Runnable {
 
     @Override
     public void run() {
-        String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/multiPredictions?stops=";
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(url);
-        boolean first = true;
-        for (BusStopLocation busstop : busStopLocationRepository.findAll()) {
-            stringBuilder.append(first ? "?" : "&");
-            stringBuilder.append(busstop.getRoute());
-            stringBuilder.append("|");
-            stringBuilder.append(busstop.getName());
-            first = false;
-        }
-        ResponseEntity<String> response = restTemplate.getForEntity(stringBuilder.toString(), String.class);
+        int stop = 0;
+        List<BusStopLocation> stops = busStopLocationRepository.findAllByOrderByRoute();
+        String route = stops.get(0).getRoute();
+        do {
+            String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/multiPredictions?stops=";
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(url);
+            boolean first = true;
+            for (;stop < stops.size() && stringBuilder.length() < 4000 && stops.get(stop).getRoute().equals(route); stop++) {
+                stringBuilder.append(first ? "" : "&stops=");
+                stringBuilder.append(stops.get(stop).getRoute());
+                stringBuilder.append("|");
+                stringBuilder.append(stops.get(stop).getName());
+                first = false;
+            }
 
-        if(response == null) {
-            return;
-        } else if (HttpStatus.OK == response.getStatusCode()) {
-            JSONObject object = new JSONObject(response);
-            parseResponse(object.getString("body"));
-        }
+            System.out.println(stringBuilder.toString());
+            ResponseEntity<String> response = restTemplate.getForEntity(stringBuilder.toString(), String.class);
+
+            if (response == null) {
+                return;
+            } else if (HttpStatus.OK == response.getStatusCode()) {
+                JSONObject object = new JSONObject(response);
+                parseResponse(object.getString("body"), route);
+            }
+            route = stops.get(stop).getRoute();
+        } while(stop != stops.size());
     }
 
-    private void parseResponse(String input) {
+    private void parseResponse(String input, String route) {
         ArrayList<Long> predictions = new ArrayList<>();
         String[] lines = input.split("\n");
         String stop = null;
         for(String line : lines) {
             if(line.contains("<predictions agencyTitle")) {
                 stop = getString("stopTag", line);
-                predictions.clear();
-            } else if(line.contains("<prediction epochTime")) {
+                predictions = new ArrayList<>();
+            } else if(line.contains("prediction epochTime")) {
                 predictions.add(Long.valueOf(getString("seconds", line)));
-                busStopLocationRepository.findByName(stop).setArrivalTimes(predictions);
+                int count = busStopLocationRepository.countAllByNameAndRoute(stop, route);
+                if(count != 0) {
+                    BusStopLocation busStopLocation = busStopLocationRepository.findByNameAndRoute(stop, route);
+                    busStopLocation.setArrivalTimes(predictions);
+                    busStopLocationRepository.save(busStopLocation);
+                }
             }
         }
-
     }
 
     private static String getString(String value, String line) {

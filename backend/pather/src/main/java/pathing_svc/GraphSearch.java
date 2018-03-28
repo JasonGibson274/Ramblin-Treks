@@ -29,7 +29,8 @@ public class GraphSearch {
             }
             if(!expanded.contains(current.get(current.size() - 1))) {
                 expanded.add(current.get(current.size() - 1));
-                for(SearchLocation location : generateSuccessors(current.get(current.size() - 1), searchLocationRepository, busStopLocationRepository)) {
+                for(SearchLocation location : generateSuccessors(current.get(current.size() - 1), searchLocationRepository,
+                        busStopLocationRepository, comparator.getPathCost(current))) {
                     List<SearchLocation> temp = new ArrayList<>(current);
                     temp.add(location);
                     frontier.add(temp);
@@ -39,7 +40,8 @@ public class GraphSearch {
         throw new NoPathException("");
     }
 
-    Set<SearchLocation> generateSuccessors(SearchLocation location, SearchLocationRepository searchLocationRepository, BusStopLocationRepository busStopLocationRepository) {
+    Set<SearchLocation> generateSuccessors(SearchLocation location, SearchLocationRepository searchLocationRepository,
+                                           BusStopLocationRepository busStopLocationRepository, double cost) {
         Set<SearchLocation> result = new HashSet<>();
         for(UUID neighborId : location.getNeighbors()) {
             if(searchLocationRepository.findOne(neighborId) != null) {

@@ -50,7 +50,7 @@ public class GraphSearchTest {
         parent.setNeighbors(new HashSet<>(children.keySet()));
 
 
-        assertThat(graphSearch.generateSuccessors(parent, mockSearchLocationRepository, null).size(), is(10));
+        assertThat(graphSearch.generateSuccessors(parent, mockSearchLocationRepository, null, 0).size(), is(10));
     }
 
     @Test
