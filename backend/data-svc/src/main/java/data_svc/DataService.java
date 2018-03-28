@@ -29,6 +29,8 @@ public class DataService {
 
     @PostConstruct
     public void setUp() {
+        busStopRepository.deleteAll();
+        busRouteRepository.deleteAll();
         GtBusesApiCalls.getStopsAndRoutes(restTemplate, busRouteRepository, busStopRepository);
     }
 
