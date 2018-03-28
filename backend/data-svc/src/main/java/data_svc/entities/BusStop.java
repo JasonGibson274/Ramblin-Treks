@@ -6,9 +6,6 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Entity
-@Table(uniqueConstraints={
-        @UniqueConstraint(columnNames = {"stopName", "busRoute"})
-})
 public class BusStop {
     @Id
     @GeneratedValue
