@@ -26,16 +26,16 @@ public class GraphSearch {
         frontier.add(path);
         while(!frontier.isEmpty()) {
             Path current = frontier.poll();
-            SearchLocation last = path.getLocations().get(path.getLocations().size() - 1);
+            SearchLocation last = current.getLocations().get(current.getLocations().size() - 1);
             if(isGoal(last, goal)) {
                 return current;
             }
             if(!expanded.contains(last)) {
                 expanded.add(last);
                 for(SearchLocation location : generateSuccessors(last, searchLocationRepository,
-                        busStopLocationRepository, path)) {
+                        busStopLocationRepository)) {
                     Path tempPath = new Path();
-                    List<SearchLocation> temp = new ArrayList<>(path.getLocations());
+                    List<SearchLocation> temp = new ArrayList<>(current.getLocations());
                     temp.add(location);
                     tempPath.setLocations(temp);
                     tempPath.setCost(comparator.getDistanceCost(current, location));
@@ -48,7 +48,7 @@ public class GraphSearch {
     }
 
     Set<SearchLocation> generateSuccessors(SearchLocation location, SearchLocationRepository searchLocationRepository,
-                                           BusStopLocationRepository busStopLocationRepository, Path path) {
+                                           BusStopLocationRepository busStopLocationRepository) {
         Set<SearchLocation> result = new HashSet<>();
         for(UUID neighborId : location.getNeighbors()) {
             if(searchLocationRepository.findOne(neighborId) != null) {
@@ -62,7 +62,7 @@ public class GraphSearch {
         return result;
     }
 
-    boolean isGoal(SearchLocation current, SearchLocation goal) {
+    private boolean isGoal(SearchLocation current, SearchLocation goal) {
         return current.equals(goal);
     }
 }
