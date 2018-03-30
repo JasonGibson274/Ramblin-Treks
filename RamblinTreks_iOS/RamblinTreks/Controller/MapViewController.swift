@@ -28,11 +28,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     //Location Manager to get current location
     var locationManager = CLLocationManager()
-    var currentLocation = CLLocation()
+    var userCurrentLocation = CLLocation()
     var route  = [Cooridnate]()
    
     //Flag for hamburger Menu
     var hamburgerMenuIsVisible = false
+    
+    var navigationMode = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,13 +49,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.delegate = self
         
         //Gatech location
-         let gaTechArea = GMSCameraPosition.camera(withLatitude: 33.7756, longitude: -84.3963, zoom: 14)
+        let gaTechArea = GMSCameraPosition.camera(withLatitude: 33.7756, longitude: -84.3963, zoom: 14)
         //Set map to focus on gatech area
         mapView.camera = gaTechArea
         
         
         //NETWORKING JSON TEST
         fetchPath()
+        //followUser()
         
         
         //Add my current location button
@@ -138,7 +141,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     func getPath(json: JSON) {
         //path = Array(count: json.count)
         for(key,subJson):(String, JSON) in json {
-            if key != "orientation"{
+            if (key != "orientation" && key != "estimate") {
                 route.append(Cooridnate(index: Double(key)! , longitude: subJson["longitude"].doubleValue, latitude: subJson["latitude"].doubleValue))
             }
             print(key)
@@ -183,12 +186,30 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     //MARK: - Location Manager Delegate Methods
     /***************************************************************/
     
+    func followUser() {
+        let userCamera = GMSCameraPosition.camera(withLatitude: userCurrentLocation.coordinate.latitude, longitude: userCurrentLocation.coordinate.longitude, zoom: 190, bearing: userCurrentLocation.course, viewingAngle: 45)
+        //let userUpdateCamera = GMSCameraUpdate.setCamera(userCamera)
+        mapView.animate(to: userCamera)
+
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[locations.count - 1]
         if location.horizontalAccuracy > 0 {
             locationManager.stopUpdatingLocation()
             print("Longitude = \(location.coordinate.longitude), Latitude = \(location.coordinate.latitude)")
         }
+
+        userCurrentLocation = locations.last!
+        let userCamera = GMSCameraPosition.camera(withLatitude: userCurrentLocation.coordinate.latitude, longitude: userCurrentLocation.coordinate.longitude, zoom: 50, bearing: userCurrentLocation.course, viewingAngle: 45)
+        //let userUpdateCamera = GMSCameraUpdate.setCamera(userCamera)
+        mapView.animate(to: userCamera)
+
+
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
