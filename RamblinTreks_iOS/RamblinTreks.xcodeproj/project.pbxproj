@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0DBDD9E37BEDA364B19A2EFC /* Pods_RamblinTreks.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FD3FA07792A9E86E3F8180 /* Pods_RamblinTreks.framework */; };
+		2B97C8C6206E8BEA005EA33B /* Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B97C8C5206E8BEA005EA33B /* Building.swift */; };
 		4805B5ED203A21B300FED751 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4805B5EC203A21B300FED751 /* Route.swift */; };
 		488D558520182BEF001CD7E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D558420182BEF001CD7E6 /* AppDelegate.swift */; };
 		488D558720182BEF001CD7E6 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488D558620182BEF001CD7E6 /* MapViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B97C8C5206E8BEA005EA33B /* Building.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Building.swift; sourceTree = "<group>"; };
 		4805B5EC203A21B300FED751 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		488D558120182BEF001CD7E6 /* RamblinTreks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RamblinTreks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		488D558420182BEF001CD7E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 			children = (
 				4805B5EC203A21B300FED751 /* Route.swift */,
 				48E52A6E204925C500606D8F /* Coordinate.swift */,
+				2B97C8C5206E8BEA005EA33B /* Building.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 			files = (
 				4805B5ED203A21B300FED751 /* Route.swift in Sources */,
 				488D558720182BEF001CD7E6 /* MapViewController.swift in Sources */,
+				2B97C8C6206E8BEA005EA33B /* Building.swift in Sources */,
 				48E52A6F204925C600606D8F /* Coordinate.swift in Sources */,
 				488D558520182BEF001CD7E6 /* AppDelegate.swift in Sources */,
 			);

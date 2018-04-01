@@ -29,7 +29,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     //Location Manager to get current location
     var locationManager = CLLocationManager()
     var userCurrentLocation = CLLocation()
-    var route  = [Cooridnate]()
+    var route  = [Coordinate]()
+    
+    //List of Buildings
+    var buildings = [Building]()
    
     //Flag for hamburger Menu
     var hamburgerMenuIsVisible = false
@@ -58,7 +61,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         fetchPath()
         //followUser()
         
+        //BUILDINGS JSON TEST
+        fetchBuildings()
         
+//        for b in buildings {
+//            print(b.name)
+//        }
+//
         //Add my current location button
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
@@ -142,14 +151,53 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         //path = Array(count: json.count)
         for(key,subJson):(String, JSON) in json {
             if (key != "orientation" && key != "estimate") {
-                route.append(Cooridnate(index: Double(key)! , longitude: subJson["longitude"].doubleValue, latitude: subJson["latitude"].doubleValue))
+                route.append(Coordinate(index: Double(key)! , longitude: subJson["longitude"].doubleValue, latitude: subJson["latitude"].doubleValue))
             }
-            print(key)
+//            print(key)
             //print(i, route[i].longitude, route[i].latitude)
             //i = i + 1
         }
-        print(route.count)
+//        print(route.count)
     }
+    
+    //MARK: - JSON Parsing for Building Names
+    func fetchBuildings() {
+        let url: String = "https://m.gatech.edu/api/gtplaces/buildings"
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        ]
+        
+        Alamofire.request(url, method: .get, headers: headers).responseJSON { (response) in
+            if response.result.isSuccess {
+                print("Alamofire succeeded to get buildings data")
+                
+                
+                let buildingsJSON = JSON(response.result.value!)
+                
+                self.getBuildings(json: buildingsJSON)
+                
+                print("**********************************************")
+                
+            } else {
+                print("Error\(String(describing: response.result.error))")
+            }
+        }
+    }
+    
+    //MARK: - JSON Parsing for Getting Buildings
+    func getBuildings(json: JSON) {
+        for (index, subJson):(String,JSON) in json {
+//            let name = subJson["name"].stringValue
+//            buildings.append(Building(name: subJson["name"].stringValue, address: subJson["address"].stringValue, latitude: subJson["latitude"].stringValue, longitude: subJson["longitude"].stringValue))
+            
+            print(subJson["name"].stringValue)
+        }
+        
+    }
+    
+    
+    
     
     //MARK: - Route Drawing
     /***************************************************************/
