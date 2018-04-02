@@ -1,6 +1,6 @@
 package data_svc;
 
-import data_svc.MapGenerator;
+import data_svc.entities.BusStop;
 import data_svc.entities.PathLocation;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,6 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
 public class MapGeneratorTest {
@@ -24,7 +23,7 @@ public class MapGeneratorTest {
     private double MAX_LATITUDE = 100.0;
     private double MIN_LONGITUDE = 0.0;
     private double MAX_LONGITUDE = 100.0;
-    private double SEPARATION_DIST = 1;
+    private double SEPARATION_DIST = 90000;
     private double VOXEL_RESOLUTION = 2;
     private final double MIN_PATH_LENGTH = 1;
 
@@ -75,12 +74,12 @@ public class MapGeneratorTest {
     @Test
     public void createsNeighborsWhenClose() {
         List<PathLocation> testCases = new ArrayList<>();
-        testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 0.0));
+        testCases.add(new PathLocation(UUID.randomUUID(), 0.1, 0.0));
         testCases.add(new PathLocation(UUID.randomUUID(), 0.5, 0.0));
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 0.6));
-        testCases.add(new PathLocation(UUID.randomUUID(), 0.7, 0.7));
+        testCases.add(new PathLocation(UUID.randomUUID(), 0.3, 0.3));
 
-        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases, new ArrayList<BusStop>());
         assertThat(result.keySet().size(), is(4));
 
         for(PathLocation current : result.keySet()) {
@@ -99,10 +98,9 @@ public class MapGeneratorTest {
         testCases.add(new PathLocation(UUID.randomUUID(), 0.0, 1.6));
         testCases.add(new PathLocation(UUID.randomUUID(), 2.7, 2.7));
 
-        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases);
+        Map<PathLocation, List<UUID>> result = mapGenerator.findNeighbors(testCases, new ArrayList<BusStop>());
         assertThat(result.keySet().size(), is(0));
     }
-
 
 
 

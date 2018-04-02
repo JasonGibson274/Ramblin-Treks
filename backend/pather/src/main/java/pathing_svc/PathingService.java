@@ -7,14 +7,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import pathing_svc.entities.PathingRequest;
-import pathing_svc.entities.PathingRequestRepository;
-import pathing_svc.entities.SearchLocation;
-import pathing_svc.entities.SearchLocationRepository;
+import pathing_svc.entities.*;
+import trek_utils.TrekUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.rowset.serial.SerialArray;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PathingService {
@@ -22,59 +25,100 @@ public class PathingService {
     private final PathingRequestRepository pathingRequestRepository;
     private final SearchLocationRepository searchLocationRepository;
     private final RestTemplate restTemplate;
+    private final BusStopLocationRepository busStopLocationRepository;
+    private UpdateBusEstimates busEstimates;
 
     @Autowired
-    public PathingService(PathingRequestRepository pathingRequestRepository, SearchLocationRepository searchLocationRepository) {
+    public PathingService(PathingRequestRepository pathingRequestRepository, SearchLocationRepository searchLocationRepository,
+                          RestTemplate restTemplate, BusStopLocationRepository busStopLocationRepository) {
         this.pathingRequestRepository = pathingRequestRepository;
         this.searchLocationRepository = searchLocationRepository;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
+        this.busStopLocationRepository = busStopLocationRepository;
+    }
+
+    @PostConstruct
+    public void setUpScheduler() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(new SchedulerTask(this), 0, 30, TimeUnit.MINUTES);
+        //pullGraphIfAbsent(true);
+        busEstimates = new UpdateBusEstimates(restTemplate, busStopLocationRepository);
+        scheduler.scheduleAtFixedRate(busEstimates, 10, 10, TimeUnit.SECONDS);
+        System.out.println("scheduler set up");
     }
 
     String getPath(UUID id, JSONObject request) {
-        pullGraphIfAbsent();
+        pullGraphIfAbsent(false);
+        busEstimates.update();
         PathingRequest pathingRequest = findOrCreate(id, request);
         SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
         GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
-        List<SearchLocation> path = search.aStar(searchLocationRepository);
+        Path path = search.aStar(searchLocationRepository, busStopLocationRepository);
         return serializePath(path);
     }
 
-    void pullGraphIfAbsent() {
-        if(searchLocationRepository.count() == 0) {
-            ResponseEntity<String> response = restTemplate.getForEntity(
-                    "http://jasongibson274.hopto.org:9001/data/simplified/path",
-                    String.class);
+    private void pullGraphIfAbsent(boolean force) {
+        if(searchLocationRepository.count() == 0 || force) {
+            String url = "http://jasongibson274.hopto.org:9001/data/simplified/path";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
             if (HttpStatus.OK == response.getStatusCode()) {
                 JSONObject object = new JSONObject(response);
                 JSONArray body = new JSONArray(object.getString("body"));
                 for(int i = 0; i < body.length(); i++) {
                     JSONObject current = body.getJSONObject(i);
-                    SearchLocation newLocation = new SearchLocation();
-                    newLocation.setLatitude(current.getDouble("latitude"));
-                    newLocation.setLongitude(current.getDouble("longitude"));
-                    newLocation.setId(UUID.fromString(current.getString("id")));
-                    JSONArray neighbors = current.getJSONArray("neighbors");
-                    HashSet<UUID> neighborList = new HashSet<>();
-                    for(int j = 0; j < neighbors.length(); j++) {
-                        neighborList.add(UUID.fromString(neighbors.getString(j)));
+                    if(current.getString("type").equals("path")) {
+                        SearchLocation newLocation = new SearchLocation();
+                        newLocation.setLatitude(current.getDouble("latitude"));
+                        newLocation.setLongitude(current.getDouble("longitude"));
+                        newLocation.setId(UUID.fromString(current.getString("id")));
+                        JSONArray neighbors = current.getJSONArray("neighbors");
+                        HashSet<UUID> neighborList = new HashSet<>();
+                        for(int j = 0; j < neighbors.length(); j++) {
+                            neighborList.add(UUID.fromString(neighbors.getString(j)));
+                        }
+                        newLocation.setNeighbors(neighborList);
+                        searchLocationRepository.save(newLocation);
+                    } else {
+                        BusStopLocation newLocation = new BusStopLocation();
+                        newLocation.setLatitude(current.getDouble("latitude"));
+                        newLocation.setLongitude(current.getDouble("longitude"));
+                        newLocation.setId(UUID.fromString(current.getString("id")));
+                        newLocation.setColor(current.getString("color"));
+                        newLocation.setName(current.getString("name"));
+                        newLocation.setRoute(current.getString("route"));
+                        JSONArray neighbors = current.getJSONArray("neighbors");
+                        HashSet<UUID> neighborList = new HashSet<>();
+                        for(int j = 0; j < neighbors.length(); j++) {
+                            neighborList.add(UUID.fromString(neighbors.getString(j)));
+                        }
+                        newLocation.setNeighbors(neighborList);
+                        busStopLocationRepository.save(newLocation);
                     }
-                    newLocation.setNeighbors(neighborList);
-                    searchLocationRepository.save(newLocation);
                 }
             }
         }
     }
 
-    String serializePath(List<SearchLocation> path) {
+    private String serializePath(Path pathObject) {
+        List<SearchLocation> path = pathObject.getLocations();
         JSONObject jsonObject = new JSONObject();
 
         for(int i = 0; i < path.size(); i++) {
             JSONObject node = new JSONObject();
             node.put("latitude", path.get(i).getLatitude());
             node.put("longitude", path.get(i).getLongitude());
+            if(path.get(i) instanceof BusStopLocation) {
+                BusStopLocation busStopLocation = (BusStopLocation) path.get(i);
+                node.put("color", "#" + busStopLocation.getColor());
+            } else {
+                node.put("color", "#ff00ff");
+            }
             jsonObject.put(String.valueOf(i), node);
         }
+        jsonObject.put("orientation", TrekUtils.getBearing(path.get(0).getLatitude(), path.get(0).getLongitude(),
+                path.get(path.size() - 1).getLatitude(), path.get(path.size() - 1).getLongitude()));
+        jsonObject.put("estimate", pathObject.getCost());
         return jsonObject.toString();
     }
 
@@ -117,5 +161,39 @@ public class PathingService {
             }
             return pathingRequest;
         }
+    }
+
+    public void getPathCsv(UUID id, HttpServletResponse response, double startLat, double startLon, double endtLat, double endLon) {
+        pullGraphIfAbsent(false);
+        PathingRequest pathingRequest = new PathingRequest();
+        pathingRequest.setStartLatitude(startLat);
+        pathingRequest.setStartLongitude(startLon);
+        pathingRequest.setEndLatitude(endtLat);
+        pathingRequest.setEndLongitude(endLon);
+        SearchLocation[] startAndEnd = findStartAndEndLocation(pathingRequest);
+        GraphSearch search = new GraphSearch(startAndEnd[0], startAndEnd[1]);
+        Path path = search.aStar(searchLocationRepository, busStopLocationRepository);
+        try {
+            TrekUtils.createCsv(response, new ArrayList<>(path.getLocations()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void cleanUp() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        pathingRequestRepository.findAllByTimeStampBefore(calendar.getTime()).forEach(object -> pathingRequestRepository.delete(object.getId()));
+        searchLocationRepository.deleteAll();
+        pathingRequestRepository.deleteAll();
+        pullGraphIfAbsent(true);
+    }
+
+    public List<SearchLocation> getAllSearchLocations() {
+        return searchLocationRepository.findAll();
+    }
+
+    public List<BusStopLocation> getAllBusStopLocations() {
+        return busStopLocationRepository.findAll();
     }
 }

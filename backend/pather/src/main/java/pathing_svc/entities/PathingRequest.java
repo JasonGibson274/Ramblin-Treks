@@ -1,9 +1,11 @@
 package pathing_svc.entities;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +26,13 @@ public class PathingRequest {
 
     @NotNull
     private double endLongitude;
+
+    private Date timeStamp;
+
+    @PostConstruct
+    public void setup() {
+        timeStamp = new Date();
+    }
 
     public PathingRequest() {
     }
@@ -90,6 +99,14 @@ public class PathingRequest {
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }
 
