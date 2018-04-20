@@ -5,10 +5,24 @@ Our backend application is based around [Docker](https://www.docker.com). This a
 
 ### Dependencies
 1. Docker
-4. ports 9001, 9003, 5432 open
+2. docker-compose
+2. ports 9001, 9003, 5432 open
 
 ### Installation Steps
 1. __[Install Docker](https://docs.docker.com/install/)__ be sure to follow the directions for your server operating system.
+
+2. __[Install docker-compose](https://docs.docker.com/compose/install/)__
+
+3. __Pull the docker images__
+
+  ```docker pull jasongibson274/path-svc```
+  ```docker pull jasongibson274/data-svc```
+
+4. __Create a file__ called *docker-compose.yml* and then copy [this](https://github.com/JasonGibson274/Ramblin-Treks/blob/backend/backend/deploy.txt) into it
+
+5. __Start the containers__
+
+```docker-compose up```
 
 ## Building From Source
 Follow the same steps as above but additionally
@@ -21,7 +35,7 @@ Follow the same steps as above but additionally
 
    1. __[Install Maven](https://maven.apache.org/install.html)__ be sure to follow the directions for your server operating system.
 
-   2. move to the directory that will be used to store the code
+   2. __Move to the directory that will be used to store the code__
 
    3. __Clone the repository__
 
@@ -29,7 +43,7 @@ Follow the same steps as above but additionally
 
    4. __Move to backend folder__
 
-   ```cd Backend```
+   ```cd backend```
 
    5. __Build the code__
 
@@ -39,7 +53,7 @@ Follow the same steps as above but additionally
 
    ```docker-compose up -d --build```
 
-   7. Verify that all three continers are running by doing
+   7. __Verify that all three continers are running by doing__
 
    ```docker ps```
 
