@@ -151,6 +151,26 @@ public class StateComparatorTest {
         BusStopLocation stop = new BusStopLocation(UUID.randomUUID(), 5.0,5.0, null);
         stop.setArrivalTimes(Collections.singletonList(1000L));
 
-        assertThat(stateComparator.getDistanceCost(path, stop), is(1000.0));
+        assertThat(stateComparator.getDistanceCost(path, stop), is(1002.0));
+    }
+
+    @Test
+    public void penalizePathsThatHaveMoreWalkingThatUseBuses() {
+        SearchLocation goal = new SearchLocation();
+        goal.setLatitude(5);
+        goal.setLongitude(5);
+        StateComparator stateComparator = new StateComparator(goal);
+
+        ArrayList<SearchLocation> locations = new ArrayList<>();
+        BusStopLocation stopStart = new BusStopLocation(UUID.randomUUID(), 1.0,1.0, null);
+        stopStart.setArrivalTimes(Collections.singletonList(600L));
+        locations.add(stopStart);
+
+        Path path = new Path(locations, 500);
+
+        BusStopLocation stop = new BusStopLocation(UUID.randomUUID(), 5.0,5.0, null);
+        stop.setArrivalTimes(Collections.singletonList(1000L));
+
+        assertThat(stateComparator.getDistanceCost(path, stop), is(1002.0));
     }
 }

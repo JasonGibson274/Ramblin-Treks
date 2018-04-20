@@ -150,6 +150,6 @@ public class GraphSearchTest {
         assertThat(result.getLocations().get(2), hasProperty("longitude", is(99.0)));
         assertThat(result.getLocations().get(3), hasProperty("latitude", is(100.0)));
         assertThat(result.getLocations().get(3), hasProperty("longitude", is(100.0)));
-        assertThat(result.getCost(), is(22807.277688963135));
+        assertThat(result.getCost(), is(22808.409566221126));
     }
 }
