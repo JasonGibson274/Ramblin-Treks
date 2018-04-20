@@ -31,6 +31,10 @@ public class UpdateBusEstimates implements Runnable {
             int stop = 0;
             List<BusStopLocation> stops = busStopLocationRepository.findAllByOrderByRoute();
             String route = stops.get(0).getRoute();
+            for(BusStopLocation cur : stops) {
+                cur.setArrivalTimes(new ArrayList<>());
+                busStopLocationRepository.save(cur);
+            }
             do {
                 String url = "https://gtbuses.herokuapp.com/agencies/georgia-tech/multiPredictions?stops=";
                 StringBuilder stringBuilder = new StringBuilder();

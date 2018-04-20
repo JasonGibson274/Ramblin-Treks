@@ -43,7 +43,7 @@ public class StateComparator implements Comparator<Path> {
                     Collections.sort(sorted);
                     for(Long arrivalTime : sorted) {
                         if(arrivalTime > result) {
-                            result = arrivalTime;
+                            result = arrivalTime + arrivalTime / path.getCost();
                             success = true;
                             break;
                         }
