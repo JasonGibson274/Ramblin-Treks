@@ -18,11 +18,11 @@ Our backend application is based around [Docker](https://www.docker.com). This a
   ```docker pull jasongibson274/path-svc```
   ```docker pull jasongibson274/data-svc```
 
-4. __Create a file__ called *docker-compose.yml* and then copy [this](https://github.com/JasonGibson274/Ramblin-Treks/blob/backend/backend/deploy.txt) into it
+4. __Create a file__ called *docker-compose.yml* and then copy [this](https://github.com/JasonGibson274/Ramblin-Treks/blob/backend/master/deploy.txt) into it
 
 5. __Start the containers__
 
-```docker-compose up```
+  ```docker-compose up```
 
 ## Building From Source
 Follow the same steps as above but additionally
