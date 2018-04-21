@@ -4,6 +4,13 @@ Our backend application is based around [Docker](https://www.docker.com). This a
 ## Change Log
 [CHANGELOG.md](CHANGELOG.md)
 
+## Live Instance
+
+__[data-svc endpoint](http://jasongibson274.hopto.org:9001/swagger-ui.html#/data-controller)__
+
+__[path-svc endpoint](http://jasongibson274.hopto.org:9003/swagger-ui.html#/pathing-controller)__
+
+
 ## Installation Instructions Simple
 
 ### Dependencies
@@ -28,8 +35,12 @@ Our backend application is based around [Docker](https://www.docker.com). This a
 
   ```docker-compose up```
 
+6. __Verify that all three continers are running by doing__
+
+   ```docker ps```
+
 ## Building From Source
-Follow the same steps as above but additionally
+Follow steps 1 and 2 from the simple installation
 
 ### Dependencies
 1. Git
@@ -39,25 +50,27 @@ Follow the same steps as above but additionally
 
    1. __[Install Maven](https://maven.apache.org/install.html)__ be sure to follow the directions for your server operating system.
 
-   2. __Move to the directory that will be used to store the code__
+   2. __[Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)__
 
-   3. __Clone the repository__
+   3. __Move to the directory that will be used to store the code__
+
+   4. __Clone the repository__
 
    ```git clone https://github.com/JasonGibson274/Ramblin-Treks.git```
 
-   4. __Move to backend folder__
+   5. __Move to backend folder__
 
    ```cd backend```
 
-   5. __Build the code__
+   6. __Build the code__
 
    ```mvn clean install```
 
-   6. __Build and run the Docker containers__
+   7. __Build and run the Docker containers__
 
    ```docker-compose up -d --build```
 
-   7. __Verify that all three continers are running by doing__
+   8. __Verify that all three continers are running by doing__
 
    ```docker ps```
 
@@ -95,6 +108,7 @@ e74089e8fc70        data-svc            "java -Djava.securit…"   24 hours ago 
 The above shows that the data-svc has failed to start. To open the log use the following command with the correct CONTAINER ID
 
 ```docker logs CONTAINER ID```
+
 ```docker logs e74089e8fc70```
 
 common error include
@@ -106,3 +120,7 @@ This means that the service cannot connect to the postgres database, ensure that
 2. __Port busy or failed to bind__
 
 This error means that another process is using the port that the container wants to connect to. Stop that process and then restart the container.
+
+__Opening an issue__
+
+If you would like to open an issue on the repository go [here](https://github.com/JasonGibson274/Ramblin-Treks/issues/new)
