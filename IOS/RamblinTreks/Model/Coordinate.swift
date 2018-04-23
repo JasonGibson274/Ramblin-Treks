@@ -8,14 +8,16 @@
 
 import Foundation
 
-class Coordinate {
+class Cooridnate {
     var index : Double
     var longitude : Double
     var latitude : Double
+    var color: String
     
-    init(index : Double, longitude : Double, latitude : Double) {
+    init(index : Double, longitude : Double, latitude : Double, color : String) {
         self.index = index
         self.longitude = longitude
         self.latitude = latitude
+        self.color = color
     }
 }

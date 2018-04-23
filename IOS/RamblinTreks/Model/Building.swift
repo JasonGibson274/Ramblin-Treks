@@ -2,22 +2,19 @@
 //  Building.swift
 //  RamblinTreks
 //
-//  Created by Varun Giridhar on 3/30/18.
+//  Created by FNU Richard on 4/1/18.
 //  Copyright © 2018 cookiesNcream. All rights reserved.
 //
 
 import Foundation
-
 class Building {
-    var name: String
-    var address: String
-    var latitude: String
-    var longitude: String
+    var name : String
+    var longitude : String
+    var latitude : String
     
-    init(name: String, address: String, latitude: String, longitude: String) {
+    init(name : String, longitude : String, latitude : String) {
         self.name = name
-        self.address = address
-        self.latitude = latitude
         self.longitude = longitude
+        self.latitude = latitude
     }
 }
